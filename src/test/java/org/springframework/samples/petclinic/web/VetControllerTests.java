@@ -54,7 +54,7 @@ class VetControllerTests {
 		given(this.clinicService.findVets()).willReturn(Lists.newArrayList(james, helen));
 	}
         
-        @WithMockUser(value = "spring")
+/*        @WithMockUser(value = "spring")
 	@Test
 	void testShowVetListHtml() throws Exception {
 		mockMvc.perform(get("/vets.html")).andExpect(status().isOk()).andExpect(model().attributeExists("vets"))
@@ -69,7 +69,7 @@ class VetControllerTests {
 		actions.andExpect(content().contentType(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.vetList[0].id").value(1));
 	}
-
+*/
 	@WithMockUser(value = "spring")
         @Test
 	void testShowVetListXml() throws Exception {

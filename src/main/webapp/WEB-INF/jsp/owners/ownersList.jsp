@@ -9,8 +9,9 @@
     <h2>Owners</h2>
 
     <table id="ownersTable" class="table table-striped">
-        <thead>
+        <thead id="ownerTable">
         <tr>
+        	
             <th style="width: 150px;">Name</th>
             <th style="width: 200px;">Address</th>
             <th>City</th>

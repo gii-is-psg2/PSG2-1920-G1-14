@@ -49,9 +49,18 @@
 @pagination-active-border:                @spring-green;
 @table-border-color:                      @spring-brown;
 
-.table > thead > tr > th {
+.table > tr > th {
   background-color: lighten(@spring-brown, 3%);
   color: @spring-light-grey;
+}
+
+.table > thead {
+	background-color: lighten(@spring-brown, 3%);
+    color: @spring-light-grey;
+}
+
+#ownerTable {
+	  background-color: #d3d3d3;
 }
 
 .table-filter {
@@ -144,6 +153,7 @@ h1 {
 table td {
   vertical-align: middle;
 }
+
 
 table td .progress {
   margin-bottom: 0;
