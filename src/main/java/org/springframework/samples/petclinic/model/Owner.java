@@ -134,6 +134,10 @@ public class Owner extends Person {
 		}
 		return null;
 	}
+	
+	public void deletePet( Pet pet ) {
+		this.getPetsInternal().remove(pet);
+	}
 
 	@Override
 	public String toString() {
@@ -144,4 +148,5 @@ public class Owner extends Person {
 				.append("telephone", this.telephone).toString();
 	}
 
+	
 }

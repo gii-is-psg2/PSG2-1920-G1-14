@@ -40,6 +40,7 @@
                         </c:when>
                         <c:otherwise>
                             <button class="btn btn-default" type="submit">Update Pet</button>
+                            <a class="btn btn-default" href="/owners/${owner.id}/pets/${pet.id}/delete">Delete Pet</a>
                         </c:otherwise>
                     </c:choose>
                 </div>

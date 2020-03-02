@@ -102,5 +102,11 @@ public class ClinicService {
 	public Collection<Visit> findVisitsByPetId(int petId) {
 		return visitRepository.findByPetId(petId);
 	}
+	
+	@Transactional
+	public void deletePet(Pet pet) throws DataAccessException {
 
+		this.petRepository.delete(pet);	
+	}
+		
 }
