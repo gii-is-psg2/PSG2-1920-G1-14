@@ -23,6 +23,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.PetType;
+import org.springframework.samples.petclinic.model.Specialty;
 import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.repository.OwnerRepository;
@@ -62,6 +63,12 @@ public class ClinicService {
 	public Collection<PetType> findPetTypes() throws DataAccessException {
 		return petRepository.findPetTypes();
 	}
+	
+	@Transactional(readOnly = true)
+	public Collection<Specialty> findSpecialties() {
+		return vetRepository.findSpecialties();
+	}
+
 
 	@Transactional(readOnly = true)
 	public Owner findOwnerById(int id) throws DataAccessException {
@@ -76,6 +83,11 @@ public class ClinicService {
 	@Transactional
 	public void saveOwner(Owner owner) throws DataAccessException {
 		ownerRepository.save(owner);
+	}
+	
+	@Transactional
+	public void saveVet(Vet vet) throws DataAccessException {
+		vetRepository.save(vet);
 	}
 
 	@Transactional

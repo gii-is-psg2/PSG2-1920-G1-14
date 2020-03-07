@@ -16,13 +16,25 @@
 package org.springframework.samples.petclinic.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.samples.petclinic.model.Specialty;
+import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.model.Vets;
 import org.springframework.samples.petclinic.service.ClinicService;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+
+import javax.validation.Valid;
 
 /**
  * @author Juergen Hoeller
@@ -33,6 +45,8 @@ import java.util.Map;
 @Controller
 public class VetController {
 
+	private static final String VIEWS_OWNER_CREATE_OR_UPDATE_FORM = "vets/createOrUpdateVetForm";
+	
 	private final ClinicService clinicService;
 
 	@Autowired
@@ -50,7 +64,31 @@ public class VetController {
 		model.put("vets", vets);
 		return "vets/vetList";
 	}
+	
+	@GetMapping(value = {"/vets/new"})
+	public String initCreationForm(ModelMap model) {
+		Vet vet = new Vet();
+		model.put("vet", vet);
+		return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
+	}
+	
+	
+	@PostMapping(value = "/vets/new")
+	public String processCreatingForm(@Valid Vet vet, BindingResult result) {
+		if(result.hasErrors()) {
+			return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
+		} else {
+			this.clinicService.saveVet(vet);
+			return "redirect:/vets";
 
+		}		
+	}
+	
+	@ModelAttribute("specialties")
+	public Collection<Specialty> populateSpecialities(){
+		return this.clinicService.findSpecialties();
+	}
+	
 	@GetMapping(value = { "/vets.xml"})
 	public @ResponseBody Vets showResourcesVetList() {
 		// Here we are returning an object of type 'Vets' rather than a collection of Vet
