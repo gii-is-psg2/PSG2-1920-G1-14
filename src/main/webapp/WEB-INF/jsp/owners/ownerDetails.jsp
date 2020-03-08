@@ -86,11 +86,56 @@
                                 </spring:url>
                                 <a href="${fn:escapeXml(visitUrl)}">Add Visit</a>
                             </td>
+                            <td>
+                                <spring:url value="/owners/{ownerId}/pets/{petId}/books/new" var="newbookUrl">
+                                    <spring:param name="ownerId" value="${owner.id}"/>
+                                    <spring:param name="petId" value="${pet.id}"/>
+                                </spring:url>
+                                <a href="${fn:escapeXml(newbookUrl)}" class="btn btn-default">New book</a>
+                            </td>
                         </tr>
                     </table>
                 </td>
             </tr>
 
+        </c:forEach>
+    </table>
+
+    <br/>
+    <br/>
+    <br/>
+    <h2>Pet Hotel Bookings</h2>
+
+    <table class="table table-striped">
+        <c:forEach var="pet" items="${owner.pets}">
+            <c:forEach var="book" items="${pet.bookings}" >
+                <tr>
+                    <td valign="top">
+                        <dl class="dl-horizontal">
+                            <dt>Pet name</dt>
+                            <dd><c:out value="${book.pet.name}"/></dd>
+                            <dt>Start date</dt>
+                            <dd><petclinic:localDate date="${book.start}" pattern="yyyy-MM-dd"/></dd>
+                            <dt>Start date</dt>
+                            <dd><petclinic:localDate date="${book.finish}" pattern="yyyy-MM-dd"/></dd>
+                        </dl>
+                    </td>
+                    <td valign="top">
+                        <table class="table-condensed">
+                            <tr>
+                                <td>
+                                    <spring:url value="/owners/{ownerId}/pets/{petId}/books/{bookId}/delete" var="bookUrl">
+                                        <spring:param name="ownerId" value="${owner.id}"/>
+                                        <spring:param name="petId" value="${book.pet.id}"/>
+                                        <spring:param name="bookId" value="${book.id}"/>
+                                    </spring:url>
+                                    <a href="${fn:escapeXml(bookUrl)}">Delete book</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </c:forEach>
         </c:forEach>
     </table>
 
