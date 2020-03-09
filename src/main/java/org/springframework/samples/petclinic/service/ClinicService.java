@@ -69,7 +69,6 @@ public class ClinicService {
 		return vetRepository.findSpecialties();
 	}
 
-
 	@Transactional(readOnly = true)
 	public Owner findOwnerById(int id) throws DataAccessException {
 		return ownerRepository.findById(id);
