@@ -41,6 +41,11 @@ public class BookController {
     public String initNewBookForm(@PathVariable("petId") int petId, Map<String, Object> model) {
         return "pets/createOrUpdateBookForm";
     }
+    
+    @InitBinder("book")
+	public void initBookBinder(WebDataBinder dataBinder) {
+		dataBinder.setValidator(new BookValidator());
+	}
 
     @PostMapping(value = "/owners/{ownerId}/pets/{petId}/books/new")
     public String processNewBookForm(@Valid Book book, BindingResult result) {
