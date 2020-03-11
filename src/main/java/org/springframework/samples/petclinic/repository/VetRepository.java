@@ -48,4 +48,8 @@ public interface VetRepository {
 
 	void save(Vet vet);
 
+	Specialty findSpecialtiesByName(String text);
+
+	Vet findVetById(int vetId);
+
 }

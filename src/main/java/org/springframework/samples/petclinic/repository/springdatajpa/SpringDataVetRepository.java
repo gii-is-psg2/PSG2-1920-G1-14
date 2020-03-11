@@ -34,4 +34,12 @@ public interface SpringDataVetRepository extends VetRepository, Repository<Vet, 
 	@Override
 	@Query("SELECT spec FROM Specialty spec ORDER BY spec.name")
 	List<Specialty> findSpecialties();
+	
+	@Override
+	@Query("SELECT spec FROM Specialty spec WHERE spec.name = ?1")
+	Specialty findSpecialtiesByName(String text);
+	
+	@Override
+	@Query("SELECT vet FROM Vet vet WHERE vet.id = ?1")
+	Vet findVetById(int vetId);
 }

@@ -16,7 +16,6 @@
 package org.springframework.samples.petclinic.model;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -49,7 +48,7 @@ public class Vet extends Person {
 
 	protected List<Specialty> getSpecialtiesInternal() {
 		if (this.specialties == null) {
-			this.specialties = new ArrayList<Specialty>();
+			this.specialties = new ArrayList<>();
 		}
 		return this.specialties;
 	}
@@ -64,9 +63,9 @@ public class Vet extends Person {
 
 	@XmlElement
 	public List<Specialty> getSpecialties() {
-		List<Specialty> sortedSpecs = new ArrayList<>(getSpecialtiesInternal());
-		PropertyComparator.sort(sortedSpecs, new MutableSortDefinition("name", true, true));
-		return Collections.unmodifiableList(sortedSpecs);
+		 List<Specialty> sortedSpecs = new ArrayList<>(getSpecialtiesInternal());
+	        PropertyComparator.sort(sortedSpecs, new MutableSortDefinition("name", true, true));
+	        return sortedSpecs;
 	}
 
 	public int getNrOfSpecialties() {

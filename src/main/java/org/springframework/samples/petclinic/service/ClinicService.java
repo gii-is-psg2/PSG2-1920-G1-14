@@ -116,8 +116,17 @@ public class ClinicService {
 	
 	@Transactional
 	public void deletePet(Pet pet) throws DataAccessException {
-
 		this.petRepository.delete(pet);	
+	}
+
+	@Transactional
+	public Specialty findSpecialtyByName(String text) {
+		return this.vetRepository.findSpecialtiesByName(text);
+	}
+	
+	@Transactional
+	public Vet findVetById(int vetId) {
+		return this.vetRepository.findVetById(vetId);
 	}
 		
 }
