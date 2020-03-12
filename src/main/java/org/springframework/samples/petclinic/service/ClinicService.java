@@ -58,6 +58,11 @@ public class ClinicService {
 	public Collection<PetType> findPetTypes() throws DataAccessException {
 		return petRepository.findPetTypes();
 	}
+	
+	@Transactional(readOnly = true)
+	public Collection<Specialty> findSpecialties() {
+		return vetRepository.findSpecialties();
+	}
 
 	@Transactional(readOnly = true)
 	public Owner findOwnerById(int id) throws DataAccessException {
@@ -77,6 +82,11 @@ public class ClinicService {
 	@Transactional
 	public void saveOwner(Owner owner) throws DataAccessException {
 		ownerRepository.save(owner);
+	}
+	
+	@Transactional
+	public void saveVet(Vet vet) throws DataAccessException {
+		vetRepository.save(vet);
 	}
 
 	@Transactional
@@ -150,6 +160,16 @@ public class ClinicService {
 	public void deleteOwner(Owner owner) throws DataAccessException {
 
 		this.ownerRepository.delete(owner);	
+	}
+
+	@Transactional
+	public Specialty findSpecialtyByName(String text) {
+		return this.vetRepository.findSpecialtiesByName(text);
+	}
+	
+	@Transactional
+	public Vet findVetById(int vetId) {
+		return this.vetRepository.findVetById(vetId);
 	}
 		
 }
