@@ -51,3 +51,6 @@ INSERT INTO visits VALUES (1, 7, '2013-01-01', 'rabies shot');
 INSERT INTO visits VALUES (2, 8, '2013-01-02', 'rabies shot');
 INSERT INTO visits VALUES (3, 8, '2013-01-03', 'neutered');
 INSERT INTO visits VALUES (4, 7, '2013-01-04', 'spayed');
+
+INSERT INTO bookings VALUES (1, 11, '2020-04-01', '2020-04-07', 'Freddy is very calm');
+INSERT INTO bookings VALUES (2, 12, '2020-05-02', '2020-05-06', 'Lucky is tremendously outgoing, he will connect with everybody')
