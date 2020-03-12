@@ -123,4 +123,33 @@ public class ClinicService {
 	    this.bookRepository.delete(book);
     }
 
+	
+	@Transactional(readOnly = true)
+	public Vet findVetById(int id) throws DataAccessException {
+		return vetRepository.findById(id);
+	}
+	
+	@Transactional
+	public void deleteVet(Vet vet) throws DataAccessException {
+
+		this.vetRepository.delete(vet);	
+	}
+	
+	@Transactional(readOnly = true)
+	public Visit findVisitById(int id) throws DataAccessException {
+		return visitRepository.findById(id);
+	}
+	
+	@Transactional
+	public void deleteVisit(Visit visit) throws DataAccessException {
+
+		this.visitRepository.delete(visit);	
+	}
+	
+	@Transactional
+	public void deleteOwner(Owner owner) throws DataAccessException {
+
+		this.ownerRepository.delete(owner);	
+	}
+		
 }
