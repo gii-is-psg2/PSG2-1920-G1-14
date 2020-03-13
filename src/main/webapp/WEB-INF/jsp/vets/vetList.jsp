@@ -14,6 +14,7 @@
 			<tr>
 				<th>Name</th>
 				<th>Specialties</th>
+				<th></th>
 			</tr>
 		</thead>
 		<tbody>
