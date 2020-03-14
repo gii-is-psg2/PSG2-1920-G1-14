@@ -20,15 +20,8 @@ import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataAccessException;
-import org.springframework.samples.petclinic.model.Owner;
-import org.springframework.samples.petclinic.model.Pet;
-import org.springframework.samples.petclinic.model.PetType;
-import org.springframework.samples.petclinic.model.Vet;
-import org.springframework.samples.petclinic.model.Visit;
-import org.springframework.samples.petclinic.repository.OwnerRepository;
-import org.springframework.samples.petclinic.repository.PetRepository;
-import org.springframework.samples.petclinic.repository.VetRepository;
-import org.springframework.samples.petclinic.repository.VisitRepository;
+import org.springframework.samples.petclinic.model.*;
+import org.springframework.samples.petclinic.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,18 +42,26 @@ public class ClinicService {
 
 	private VisitRepository visitRepository;
 
+	private BookRepository bookRepository;
+
 	@Autowired
 	public ClinicService(PetRepository petRepository, VetRepository vetRepository, OwnerRepository ownerRepository,
-			VisitRepository visitRepository) {
+			VisitRepository visitRepository, BookRepository bookRepository) {
 		this.petRepository = petRepository;
 		this.vetRepository = vetRepository;
 		this.ownerRepository = ownerRepository;
 		this.visitRepository = visitRepository;
+		this.bookRepository = bookRepository;
 	}
 
 	@Transactional(readOnly = true)
 	public Collection<PetType> findPetTypes() throws DataAccessException {
 		return petRepository.findPetTypes();
+	}
+	
+	@Transactional(readOnly = true)
+	public Collection<Specialty> findSpecialties() {
+		return vetRepository.findSpecialties();
 	}
 
 	@Transactional(readOnly = true)
@@ -73,15 +74,29 @@ public class ClinicService {
 		return ownerRepository.findByLastName(lastName);
 	}
 
+    @Transactional(readOnly = true)
+    public Book findBookById(int id) throws DataAccessException {
+	    return bookRepository.findById(id);
+    }
+
 	@Transactional
 	public void saveOwner(Owner owner) throws DataAccessException {
 		ownerRepository.save(owner);
+	}
+	
+	@Transactional
+	public void saveVet(Vet vet) throws DataAccessException {
+		vetRepository.save(vet);
 	}
 
 	@Transactional
 	public void saveVisit(Visit visit) throws DataAccessException {
 		visitRepository.save(visit);
 	}
+
+	public void saveBooking(Book book) throws DataAccessException {
+	    bookRepository.save(book);
+    }
 
 	@Transactional(readOnly = true)
 	public Pet findPetById(int id) throws DataAccessException {
@@ -102,11 +117,54 @@ public class ClinicService {
 	public Collection<Visit> findVisitsByPetId(int petId) {
 		return visitRepository.findByPetId(petId);
 	}
-	
+
+	public Collection<Book> findBookingsByPetOwnerId(int ownerId) {
+	    return bookRepository.findByPetOwnerId(ownerId);
+    }
+
 	@Transactional
 	public void deletePet(Pet pet) throws DataAccessException {
 
-		this.petRepository.delete(pet);	
+		this.petRepository.delete(pet);
+	}
+
+	@Transactional
+    public void deleteBook(Book book) throws DataAccessException {
+	    this.bookRepository.delete(book);
+    }
+
+	
+	@Transactional(readOnly = true)
+	public Vet findVetById(int id) throws DataAccessException {
+		return vetRepository.findById(id);
+	}
+	
+	@Transactional
+	public void deleteVet(Vet vet) throws DataAccessException {
+
+		this.vetRepository.delete(vet);	
+	}
+	
+	@Transactional(readOnly = true)
+	public Visit findVisitById(int id) throws DataAccessException {
+		return visitRepository.findById(id);
+	}
+	
+	@Transactional
+	public void deleteVisit(Visit visit) throws DataAccessException {
+
+		this.visitRepository.delete(visit);	
+	}
+	
+	@Transactional
+	public void deleteOwner(Owner owner) throws DataAccessException {
+
+		this.ownerRepository.delete(owner);	
+	}
+
+	@Transactional
+	public Specialty findSpecialtyByName(String text) {
+		return this.vetRepository.findSpecialtiesByName(text);
 	}
 		
 }
