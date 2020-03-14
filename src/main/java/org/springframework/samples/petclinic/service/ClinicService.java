@@ -166,10 +166,5 @@ public class ClinicService {
 	public Specialty findSpecialtyByName(String text) {
 		return this.vetRepository.findSpecialtiesByName(text);
 	}
-	
-	@Transactional
-	public Vet findVetById(int vetId) {
-		return this.vetRepository.findVetById(vetId);
-	}
 		
 }
