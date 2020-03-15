@@ -107,12 +107,12 @@ public class PetController {
 			return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
 		}
 		else {
-			owner.addPet(pet);
+		    pet.setOwner(owner);
 			this.clinicService.savePet(pet);
 			return "redirect:/owners/{ownerId}";
 		}
 	}
-	
+
 	@GetMapping(value= "/pets/{petId}/delete")
 	public String delete(@PathVariable("petId") int petId, Owner owner, ModelMap model) {
 		Pet pet = this.clinicService.findPetById(petId);
@@ -120,5 +120,5 @@ public class PetController {
 		this.clinicService.deletePet(pet);
 		return "redirect:/owners/{ownerId}";
 	}
-	
+
 }
