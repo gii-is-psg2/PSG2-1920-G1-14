@@ -44,21 +44,28 @@ public class ClinicService {
 
 	private BookRepository bookRepository;
 
+	private CauseRepository causeRepository;
+
+	private DonationRepository donationRepository;
+
 	@Autowired
 	public ClinicService(PetRepository petRepository, VetRepository vetRepository, OwnerRepository ownerRepository,
-			VisitRepository visitRepository, BookRepository bookRepository) {
+			VisitRepository visitRepository, BookRepository bookRepository, CauseRepository causeRepository,
+            DonationRepository donationRepository) {
 		this.petRepository = petRepository;
 		this.vetRepository = vetRepository;
 		this.ownerRepository = ownerRepository;
 		this.visitRepository = visitRepository;
 		this.bookRepository = bookRepository;
+		this.causeRepository = causeRepository;
+		this.donationRepository = donationRepository;
 	}
 
 	@Transactional(readOnly = true)
 	public Collection<PetType> findPetTypes() throws DataAccessException {
 		return petRepository.findPetTypes();
 	}
-	
+
 	@Transactional(readOnly = true)
 	public Collection<Specialty> findSpecialties() {
 		return vetRepository.findSpecialties();
@@ -83,7 +90,7 @@ public class ClinicService {
 	public void saveOwner(Owner owner) throws DataAccessException {
 		ownerRepository.save(owner);
 	}
-	
+
 	@Transactional
 	public void saveVet(Vet vet) throws DataAccessException {
 		vetRepository.save(vet);
@@ -133,38 +140,75 @@ public class ClinicService {
 	    this.bookRepository.delete(book);
     }
 
-	
+
 	@Transactional(readOnly = true)
 	public Vet findVetById(int id) throws DataAccessException {
 		return vetRepository.findById(id);
 	}
-	
+
 	@Transactional
 	public void deleteVet(Vet vet) throws DataAccessException {
 
-		this.vetRepository.delete(vet);	
+		this.vetRepository.delete(vet);
 	}
-	
+
 	@Transactional(readOnly = true)
 	public Visit findVisitById(int id) throws DataAccessException {
 		return visitRepository.findById(id);
 	}
-	
+
 	@Transactional
 	public void deleteVisit(Visit visit) throws DataAccessException {
 
-		this.visitRepository.delete(visit);	
+		this.visitRepository.delete(visit);
 	}
-	
+
 	@Transactional
 	public void deleteOwner(Owner owner) throws DataAccessException {
 
-		this.ownerRepository.delete(owner);	
+		this.ownerRepository.delete(owner);
 	}
 
 	@Transactional
 	public Specialty findSpecialtyByName(String text) {
 		return this.vetRepository.findSpecialtiesByName(text);
 	}
-		
+
+	@Transactional(readOnly = true)
+    public Cause findCauseById(int causeId) throws DataAccessException {
+	    return this.causeRepository.findById(causeId);
+    }
+
+    @Transactional
+    public void saveCause(Cause cause) throws DataAccessException {
+	    this.causeRepository.save(cause);
+    }
+
+    @Transactional
+    public void deleteCause(Cause cause) throws DataAccessException {
+	    this.causeRepository.delete(cause);
+    }
+
+    @Transactional(readOnly = true)
+    public Donation findDonationById(int donationId) throws DataAccessException {
+	    return this.donationRepository.findById(donationId);
+    }
+
+    @Transactional(readOnly = true)
+    public Collection<Donation> findDonationsByCauseId(int causeId) throws DataAccessException {
+	    return this.donationRepository.findByCauseId(causeId);
+    }
+
+    @Transactional
+    public void saveDonation(Donation donation) throws DataAccessException {
+	    this.donationRepository.save(donation);
+    }
+
+    @Transactional
+    public void deleteDonation(Donation donation) throws DataAccessException {
+	    this.donationRepository.delete(donation);
+    }
+
+
+
 }
