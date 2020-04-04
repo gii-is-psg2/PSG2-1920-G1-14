@@ -6,7 +6,6 @@
 
 <petclinic:layout pageName="create cause">
    
-    <jsp:body>
         <h2>
             <c:if test="${cause['new']}">New </c:if> Cause
         </h2>
@@ -30,5 +29,4 @@
             </div>
         </div>
         </form:form>
-    </jsp:body>
 </petclinic:layout>

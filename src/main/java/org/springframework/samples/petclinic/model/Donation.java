@@ -15,7 +15,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Table(name = "donations")
 public class Donation extends BaseEntity{
 
-	@Column(name = "date")
+	@Column(name = "donation_date")
     @DateTimeFormat(pattern = "yyyy/MM/dd")
     private LocalDate date;
 	

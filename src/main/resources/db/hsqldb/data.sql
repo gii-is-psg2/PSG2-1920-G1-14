@@ -53,4 +53,11 @@ INSERT INTO visits VALUES (3, 8, '2013-01-03', 'neutered');
 INSERT INTO visits VALUES (4, 7, '2013-01-04', 'spayed');
 
 INSERT INTO bookings VALUES (1, 11, '2020-04-01', '2020-04-07', 'Freddy is very calm');
-INSERT INTO bookings VALUES (2, 12, '2020-05-02', '2020-05-06', 'Lucky is tremendously outgoing, he will connect with everybody')
+INSERT INTO bookings VALUES (2, 12, '2020-05-02', '2020-05-06', 'Lucky is tremendously outgoing, he will connect with everybody');
+
+INSERT INTO causes VALUES (1, 'Children', 'Money for children without the conditions to study', 100.0, 'ONG');
+INSERT INTO causes VALUES (2, 'Homeless', 'Money for people without a ceiling', 200.0, 'Government');
+
+INSERT INTO donations VALUES (1, 2, '2019-02-01', 20.0, 'George');
+
+

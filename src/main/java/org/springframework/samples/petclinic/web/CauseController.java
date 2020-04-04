@@ -24,8 +24,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class CauseController {
-
-	private static final String VIEWS_CAUSE_CREATE_OR_UPDATE_FORM = "causes/createCauseForm";
 	
 	private ClinicService clinicService;
 
@@ -41,24 +39,25 @@ public class CauseController {
 	}
 
 	@GetMapping(value = "/causes")
-	public String ShowCauses(final Cause cause, final BindingResult result, final Map<String, Object> model) {
+	public String ShowCauses(ModelMap modelMap) {
+		String vista = "causes/causesList";
 		Collection<Cause> results = this.clinicService.findCauses();
-		model.put("causes", results);
-		return "causes/causesList";
+		modelMap.addAttribute("causes", results);
+		return vista;
 	}
 
 	@GetMapping(value = "/causes/{causeId}")
-	public ModelAndView showCause(@PathVariable("causeId") final int causeId) {
-		ModelAndView mav = new ModelAndView("causes/causeDetails");
-		mav.addObject(this.clinicService.findDonationsByCauseId(causeId));
-		return mav;
+	public String showCause(@PathVariable("causeId") int causeId, Map<String, Object> model) {	
+		Cause cause = this.clinicService.findCauseById(causeId);
+		model.put("cause", cause);
+		return "causes/causeDetails";
 	}
 
 	@GetMapping(value = "/causes/new")
 	public String initCreationForm(Map<String, Object> model) {
 		Cause cause = new Cause();
 		model.put("cause", cause);
-		return VIEWS_CAUSE_CREATE_OR_UPDATE_FORM;
+		return "causes/createCauseForm";
 	}
 	
 	@PostMapping(value = "/causes/new")
