@@ -12,10 +12,9 @@
         <thead id="donationsTable">
         <tr>
         	
-            <th style="width: 150px;">Amount</th>
-            <th style="width: 200px;">Client</th>
-            
-            <th></th>
+            <th>Amount</th>
+            <th>Client</th>
+          
         </tr>
         </thead>
         <tbody>
@@ -23,8 +22,6 @@
             <tr>
                
                 <td>
-               
-              	<dt>Amount</dt>
                     <c:out value="${donation.amount}"/>
                 </td>
                 <td>

@@ -8,12 +8,10 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Cause;
-import org.springframework.samples.petclinic.model.Owner;
-import org.springframework.samples.petclinic.model.Pet;
+import org.springframework.samples.petclinic.model.Donation;
 import org.springframework.samples.petclinic.service.ClinicService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,12 +44,23 @@ public class CauseController {
 		return vista;
 	}
 
+//	@GetMapping(value = "/causes/{causeId}")
+//	public String showCause(@PathVariable("causeId") int causeId, Map<String, Object> model) {	
+//		Cause cause = this.clinicService.findCauseById(causeId);
+//		model.put("cause", cause);
+//		return "causes/causeDetails";
+//	}
+	
 	@GetMapping(value = "/causes/{causeId}")
-	public String showCause(@PathVariable("causeId") int causeId, Map<String, Object> model) {	
-		Cause cause = this.clinicService.findCauseById(causeId);
-		model.put("cause", cause);
-		return "causes/causeDetails";
+	public ModelAndView showCause(@PathVariable("causeId") int causeId, Map<String, Object> model) {
+		Collection<Donation> donations;
+    	donations = this.clinicService.findDonationsByCauseId(causeId);
+        model.put("donations", donations);
+        ModelAndView mav = new ModelAndView("causes/causeDetails");
+        mav.addObject("cause",this.clinicService.findCauseById(causeId));
+        return mav;
 	}
+	
 
 	@GetMapping(value = "/causes/new")
 	public String initCreationForm(Map<String, Object> model) {
@@ -65,6 +74,7 @@ public class CauseController {
 		this.clinicService.saveCause(cause);
 		return "redirect:/causes";
 	}
+	
 		}
 	
 
