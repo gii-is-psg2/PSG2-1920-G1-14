@@ -27,7 +27,7 @@ public class Donation extends BaseEntity{
 	@Column(name = "client")
 	private String client;
 	
-	@NotNull
+//	@NotNull
 	@ManyToOne
     @JoinColumn(name = "cause_id")
     private Cause cause;
