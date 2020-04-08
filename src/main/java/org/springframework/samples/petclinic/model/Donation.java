@@ -18,16 +18,16 @@ public class Donation extends BaseEntity{
 	@Column(name = "donation_date")
     @DateTimeFormat(pattern = "yyyy/MM/dd")
     private LocalDate date;
-	
+
 	@NotNull
 	@Column(name = "amount")
 	private Double amount;
-	
+
 	@NotNull
 	@Column(name = "client")
 	private String client;
-	
-//	@NotNull
+
+	@NotNull
 	@ManyToOne
     @JoinColumn(name = "cause_id")
     private Cause cause;
@@ -64,8 +64,8 @@ public class Donation extends BaseEntity{
 		this.cause = cause;
 	}
 
-	
-	
-	
-	
+
+
+
+
 }

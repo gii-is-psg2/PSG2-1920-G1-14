@@ -44,13 +44,11 @@ public class DonationController {
 	}
 
 	@PostMapping(value = "/causes/{causeId}/donations/new")
-	public String processCreationDonationForm(@Valid final Donation donation,
-			@PathVariable("causeId") final int causeId, final BindingResult result) {
-		Cause cause = this.clinicService.findCauseById(causeId);
+	public String processCreationDonationForm(@Valid final Donation donation, final BindingResult result,
+			@PathVariable("causeId") final int causeId) {
 		donation.setDate(LocalDate.now());
-		donation.setCause(cause);
-		
-		if (cause.getClosed()) {
+
+		if (donation.getCause().getClosed()) {
 			result.rejectValue("amount", "error.amount", "The cause has been already completed");
 			return "donations/createDonationForm";
 		} else {
@@ -58,7 +56,7 @@ public class DonationController {
 				result.rejectValue("amount", "error.amount", "The donation can not be 0");
 				return "donations/createDonationForm";
 			}
-			if (cause.getAmount() + donation.getAmount() > cause.getBudgetTarget()) {
+			if (donation.getCause().getAmount() + donation.getAmount() > donation.getCause().getBudgetTarget()) {
 				result.rejectValue("amount", "error.amount", "The donation cant be higher than the remaining amount");
 				return "donations/createDonationForm";
 			}
@@ -70,7 +68,7 @@ public class DonationController {
 				return "donations/createDonationForm";
 			} else {
 				this.clinicService.saveDonation(donation);
-				this.clinicService.saveCause(cause);
+				this.clinicService.saveCause(donation.getCause());
 				return "redirect:/causes";
 			}
 		}
