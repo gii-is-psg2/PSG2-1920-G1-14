@@ -43,7 +43,7 @@ public class BookController {
     public String initNewBookForm(@PathVariable("petId") int petId, Map<String, Object> model) {
         return "pets/createOrUpdateBookForm";
     }
-    
+
     @InitBinder("book")
 	public void initBookBinder(WebDataBinder dataBinder) {
 		dataBinder.setValidator(new BookValidator());
@@ -61,6 +61,7 @@ public class BookController {
 				return "pets/createOrUpdateBookForm";
 			} catch (PartialOverlapDateException e) {
 				result.rejectValue("start", "partialOverlap","partialOverlap");
+                result.rejectValue("finish", "partialOverlap","partialOverlap");
 				return "pets/createOrUpdateBookForm";
 			}
 			return "redirect:/owners/{ownerId}";
