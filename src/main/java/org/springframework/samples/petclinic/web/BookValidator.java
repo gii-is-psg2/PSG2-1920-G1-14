@@ -1,6 +1,8 @@
 package org.springframework.samples.petclinic.web;
 
 
+import java.time.LocalDate;
+
 import org.springframework.samples.petclinic.model.Book;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.util.StringUtils;
@@ -11,6 +13,8 @@ public class BookValidator implements Validator{
 
 	private static final String REQUIRED = "required";
 	private static final String DATE = "date";
+	private static final String PAST_DATE = "pastDate";
+
 	
 	@Override
 	public boolean supports(Class<?> clazz) {
@@ -29,6 +33,10 @@ public class BookValidator implements Validator{
 		if (book.getStart().isAfter(book.getFinish())) {
 			errors.rejectValue("start", DATE, DATE);
 			
+		}
+		
+		if(book.getStart().isBefore(LocalDate.now())) {
+			errors.rejectValue("start", PAST_DATE, PAST_DATE);
 		}
 
 	}
