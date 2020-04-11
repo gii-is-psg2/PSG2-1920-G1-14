@@ -16,27 +16,19 @@
 
 package org.springframework.samples.petclinic.service;
 
+import java.time.LocalDate;
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataAccessException;
-import org.springframework.samples.petclinic.model.Book;
-import org.springframework.samples.petclinic.model.Cause;
-import org.springframework.samples.petclinic.model.Donation;
-import org.springframework.samples.petclinic.model.Owner;
-import org.springframework.samples.petclinic.model.Pet;
-import org.springframework.samples.petclinic.model.PetType;
-import org.springframework.samples.petclinic.model.Specialty;
-import org.springframework.samples.petclinic.model.Vet;
-import org.springframework.samples.petclinic.model.Visit;
-import org.springframework.samples.petclinic.repository.BookRepository;
-import org.springframework.samples.petclinic.repository.CauseRepository;
-import org.springframework.samples.petclinic.repository.DonationRepository;
-import org.springframework.samples.petclinic.repository.OwnerRepository;
-import org.springframework.samples.petclinic.repository.PetRepository;
-import org.springframework.samples.petclinic.repository.VetRepository;
-import org.springframework.samples.petclinic.repository.VisitRepository;
+import org.springframework.samples.petclinic.model.*;
+import org.springframework.samples.petclinic.repository.*;
+import org.springframework.samples.petclinic.service.exceptions.PartialOverlapDateException;
+import org.springframework.samples.petclinic.service.exceptions.TotalOverlapDateException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -116,8 +108,43 @@ public class ClinicService {
 		this.visitRepository.save(visit);
 	}
 
-	public void saveBooking(final Book book) throws DataAccessException {
-		this.bookRepository.save(book);
+	public void saveBooking(Book book) throws DataAccessException, TotalOverlapDateException, PartialOverlapDateException {
+		Collection<Book> books = bookRepository.findByPetOwnerId(book.getPet().getId());
+		Collection<Book> bookStart = books;
+		Collection<Book> bookFinish = books;
+
+		List<LocalDate> startDates = bookStart.stream().map(x->x.getStart()).collect(Collectors.toList());
+		List<LocalDate> finishDates = bookFinish.stream().map(x->x.getFinish()).collect(Collectors.toList());
+
+		String overlapType = OverlapType(startDates, finishDates, book.getStart(), book.getFinish());
+		if(overlapType != "") {
+			if(overlapType == "complete") {
+				throw new TotalOverlapDateException();
+			} else {
+				throw new PartialOverlapDateException();
+			}
+		}	else {
+		    bookRepository.save(book);
+		}
+    }
+
+	private String OverlapType(List<LocalDate> startDates, List<LocalDate> finishDates, LocalDate newBookStart, LocalDate newBookFinish) {
+		Integer i = 0;
+		String res = "";
+		while(i < startDates.size()) {
+			LocalDate startBookI = startDates.get(i);
+			LocalDate finishBookI = finishDates.get(i);
+			if(((newBookStart.equals(startBookI) || newBookStart.isAfter(startBookI)) && ((newBookFinish.equals(finishBookI)) || newBookFinish.isBefore(finishBookI)))
+				|| (newBookStart.equals(startBookI) || newBookStart.isBefore(startBookI)) && ((newBookFinish.equals(finishBookI)) || newBookFinish.isAfter(finishBookI))) {
+				res = "complete";
+			}	else if(startBookI.isBefore(newBookFinish) && (finishBookI.isAfter(newBookFinish) || finishBookI.equals(newBookFinish))){
+				res = "partial";
+			}	else if(startBookI.isBefore(newBookStart) && finishBookI.isAfter(newBookStart)) {
+					res = "partial";
+			}
+			i++;
+		}
+		return res;
 	}
 
 	@Transactional(readOnly = true)
@@ -144,9 +171,7 @@ public class ClinicService {
 		return this.bookRepository.findByPetOwnerId(ownerId);
 	}
 
-	@Transactional
-	public void deletePet(final Pet pet) throws DataAccessException {
-
+	public void deletePet(Pet pet) throws DataAccessException {
 		this.petRepository.delete(pet);
 	}
 

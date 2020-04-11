@@ -10,7 +10,6 @@ import org.springframework.samples.petclinic.model.Cause;
 import org.springframework.samples.petclinic.model.Donation;
 import org.springframework.samples.petclinic.service.ClinicService;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -48,30 +47,47 @@ public class DonationController {
 			@PathVariable("causeId") final int causeId) {
 		donation.setDate(LocalDate.now());
 
-		if (donation.getCause().getClosed()) {
-			result.rejectValue("amount", "error.amount", "The cause has been already completed");
+		if (result.hasErrors()) {
 			return "donations/createDonationForm";
 		} else {
-			if ( donation.getAmount() <= 0) {
-				result.rejectValue("amount", "error.amount", "The donation can not be 0");
-				return "donations/createDonationForm";
-			}
-			if (donation.getCause().getAmount() + donation.getAmount() > donation.getCause().getBudgetTarget()) {
-				result.rejectValue("amount", "error.amount", "The donation cant be higher than the remaining amount");
-				return "donations/createDonationForm";
-			}
-			if(donation.getClient()==null || donation.getClient()=="") {
-				result.rejectValue("client", "error.client", "You must introduce a name");
-				return "donations/createDonationForm";
-			}
-			if (result.hasErrors()) {
+
+			if (donation.getCause().getClosed()) {
+				result.rejectValue("amount", "error.amount", "The cause has been already completed");
 				return "donations/createDonationForm";
 			} else {
+				if (TieneMasDeDosDecimales(donation.getAmount())) {
+					result.rejectValue("amount", "error.amount",
+							"Invalid format. Money can only have 2 decimal digits");
+					return "donations/createDonationForm";
+				}
+				
+				if (donation.getAmount() <= 0) {
+					result.rejectValue("amount", "error.amount", "The donation can not be 0");
+					return "donations/createDonationForm";
+				}
+				if (donation.getCause().getAmount() + donation.getAmount() > donation.getCause().getBudgetTarget()) {
+					result.rejectValue("amount", "error.amount",
+							"The donation cant be higher than the remaining amount");
+					return "donations/createDonationForm";
+				}
+				if (donation.getClient() == null || donation.getClient() == "") {
+					result.rejectValue("client", "error.client", "You must introduce a name");
+					return "donations/createDonationForm";
+				}
 				this.clinicService.saveDonation(donation);
 				this.clinicService.saveCause(donation.getCause());
 				return "redirect:/causes";
+
 			}
 		}
 	}
-
+	
+	private Boolean TieneMasDeDosDecimales(final Double num) {
+            Boolean res = true;
+            Double n =  Math.floor(num * 100) / 100;
+            if (num - n == 0.) {
+                res = false;
+            } 
+            return res;
+    }
 }
