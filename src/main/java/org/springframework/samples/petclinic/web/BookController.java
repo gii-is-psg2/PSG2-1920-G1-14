@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.Book;
 import org.springframework.samples.petclinic.service.ClinicService;
+import org.springframework.samples.petclinic.service.exceptions.PartialOverlapDateException;
+import org.springframework.samples.petclinic.service.exceptions.TotalOverlapDateException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -41,22 +43,30 @@ public class BookController {
     public String initNewBookForm(@PathVariable("petId") int petId, Map<String, Object> model) {
         return "pets/createOrUpdateBookForm";
     }
-    
+
     @InitBinder("book")
 	public void initBookBinder(WebDataBinder dataBinder) {
 		dataBinder.setValidator(new BookValidator());
 	}
 
-    @PostMapping(value = "/owners/{ownerId}/pets/{petId}/books/new")
-    public String processNewBookForm(@Valid Book book, BindingResult result) {
-        if (result.hasErrors()) {
-            return "pets/createOrUpdateBookForm";
-        }
-        else {
-            this.clinicService.saveBooking(book);
-            return "redirect:/owners/{ownerId}";
-        }
-    }
+	@PostMapping(value = "/owners/{ownerId}/pets/{petId}/books/new")
+	public String processNewBookForm(@Valid Book book, BindingResult result) {
+		if (result.hasErrors()) {
+			return "pets/createOrUpdateBookForm";
+		} else {
+			try {
+				this.clinicService.saveBooking(book);
+			} catch (TotalOverlapDateException e) {
+				result.rejectValue("start", "completeOverlap","completeOverlap");
+				return "pets/createOrUpdateBookForm";
+			} catch (PartialOverlapDateException e) {
+				result.rejectValue("start", "partialOverlap","partialOverlap");
+                result.rejectValue("finish", "partialOverlap","partialOverlap");
+				return "pets/createOrUpdateBookForm";
+			}
+			return "redirect:/owners/{ownerId}";
+		}
+	}
 
     @GetMapping(value= "/owners/{ownerId}/pets/{petId}/books/{bookId}/delete")
     public String delete(@PathVariable("bookId") int bookId, @PathVariable("petId") int petId, ModelMap model) {
