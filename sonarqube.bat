@@ -1,0 +1,1 @@
+mvn sonar:sonar -Dsonar.projectKey=petclinic-g1-14 -Dsonar.host.url=http://oitilo.us.es:9000 -Dsonar.login=ad757f0dc2ae35babf019be75a7229e5ba9c7dc8
