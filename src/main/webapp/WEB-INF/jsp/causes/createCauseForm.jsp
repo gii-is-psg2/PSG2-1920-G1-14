@@ -15,7 +15,7 @@
                 
                 <petclinic:inputField label="Name" name="name"/>
                 <petclinic:inputField label="Description" name="description"/>
-                <petclinic:inputField label="Budget Target" name="budgetTarget"/>
+                <petclinic:numberField label="Budget Target" name="budgetTarget" step="0.01" min="0"/>
                 <petclinic:inputField label="Organization" name="organization"/>
               
             </div>
