@@ -46,32 +46,26 @@ public class DonationController {
 	@PostMapping(value = "/causes/{causeId}/donations/new")
 	public String processCreationDonationForm(@Valid final Donation donation, final BindingResult result,
 			@PathVariable("causeId") final int causeId) {
-		donation.setDate(LocalDate.now());
-
-		if (donation.getCause().getClosed()) {
-			result.rejectValue("amount", "error.amount", "The cause has been already completed");
-			return "donations/createDonationForm";
-		} else {
-			if ( donation.getAmount() <= 0) {
-				result.rejectValue("amount", "error.amount", "The donation can not be 0");
-				return "donations/createDonationForm";
-			}
-			if (donation.getCause().getAmount() + donation.getAmount() > donation.getCause().getBudgetTarget()) {
-				result.rejectValue("amount", "error.amount", "The donation cant be higher than the remaining amount");
-				return "donations/createDonationForm";
-			}
-			if(donation.getClient()==null || donation.getClient()=="") {
-				result.rejectValue("client", "error.client", "You must introduce a name");
-				return "donations/createDonationForm";
-			}
-			if (result.hasErrors()) {
-				return "donations/createDonationForm";
-			} else {
-				this.clinicService.saveDonation(donation);
-				this.clinicService.saveCause(donation.getCause());
-				return "redirect:/causes";
-			}
-		}
+        if (result.hasErrors()) {
+            return "donations/createDonationForm";
+        } else if (donation.getCause().getClosed()) {
+            result.rejectValue("amount", "error.amount", "The cause has been already completed");
+            return "donations/createDonationForm";
+        } else if ( donation.getAmount() <= 0) {
+            result.rejectValue("amount", "error.amount", "The donation can not be 0");
+            return "donations/createDonationForm";
+        } else if (donation.getCause().getAmount() + donation.getAmount() > donation.getCause().getBudgetTarget()) {
+            result.rejectValue("amount", "error.amount", "The donation cant be higher than the remaining amount");
+            return "donations/createDonationForm";
+        }else if(donation.getClient()==null || donation.getClient()=="") {
+            result.rejectValue("client", "error.client", "You must introduce a name");
+            return "donations/createDonationForm";
+        } else {
+            donation.setDate(LocalDate.now());
+            this.clinicService.saveDonation(donation);
+            this.clinicService.saveCause(donation.getCause());
+            return "redirect:/causes";
+        }
 	}
 
 }

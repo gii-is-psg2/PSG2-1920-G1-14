@@ -29,9 +29,9 @@
 						</spring:url> <a href="${fn:escapeXml(causeUrl)}"><c:out
 								value="${cause.name} " /></a></td>
 					<td><c:out value="${cause.description}" /></td>
-					<td><c:out value="${cause.budgetTarget}" /></td>
+					<td><fmt:formatNumber type="currency" maxFractionDigits="2" value="${cause.budgetTarget}" currencySymbol="&euro;" /></td>
 					<td><c:out value="${cause.organization}" /></td>
-					<td><c:out value="${cause.amount}"></c:out></td>
+					<td><fmt:formatNumber type="currency" maxFractionDigits="2" value="${cause.amount}" currencySymbol="&euro;" /></td>
 
 					<td><spring:url value="/causes/{causeId}/donations/new"
 							var="newDonationUrl">

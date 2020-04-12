@@ -116,7 +116,7 @@ public class ClinicService {
 		List<LocalDate> startDates = bookStart.stream().map(x->x.getStart()).collect(Collectors.toList());
 		List<LocalDate> finishDates = bookFinish.stream().map(x->x.getFinish()).collect(Collectors.toList());
 
-		String overlapType = OverlapType(startDates, finishDates, book.getStart(), book.getFinish());
+		String overlapType = overlapType(startDates, finishDates, book.getStart(), book.getFinish());
 		if(overlapType != "") {
 			if(overlapType == "complete") {
 				throw new TotalOverlapDateException();
@@ -128,8 +128,8 @@ public class ClinicService {
 		}
     }
 
-	private String OverlapType(List<LocalDate> startDates, List<LocalDate> finishDates, LocalDate newBookStart, LocalDate newBookFinish) {
-		Integer i = 0;
+	private String overlapType(List<LocalDate> startDates, List<LocalDate> finishDates, LocalDate newBookStart, LocalDate newBookFinish) {
+		int i = 0;
 		String res = "";
 		while(i < startDates.size()) {
 			LocalDate startBookI = startDates.get(i);
@@ -140,8 +140,10 @@ public class ClinicService {
 			}	else if(startBookI.isBefore(newBookFinish) && (finishBookI.isAfter(newBookFinish) || finishBookI.equals(newBookFinish))){
 				res = "partial";
 			}	else if(startBookI.isBefore(newBookStart) && finishBookI.isAfter(newBookStart)) {
-					res = "partial";
-			}
+			    res = "partial";
+			} else if (startBookI.equals(newBookFinish) || finishBookI.equals(newBookStart)) {
+                res = "partial";
+            }
 			i++;
 		}
 		return res;

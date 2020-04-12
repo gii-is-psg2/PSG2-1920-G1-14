@@ -15,7 +15,7 @@
             <div class="form-group has-feedback">
                 
                 <petclinic:inputField label="Name" name="client"/>
-                <petclinic:inputField label="Amount" name="amount"/>
+                <petclinic:numberField label="Amount" name="amount" step="0.01" min="0"/>
                 
               
             </div>
