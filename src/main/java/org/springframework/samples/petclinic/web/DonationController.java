@@ -48,7 +48,11 @@ public class DonationController {
 			@PathVariable("causeId") final int causeId) {
         if (result.hasErrors()) {
             return "donations/createDonationForm";
-        } else if (donation.getCause().getClosed()) {
+        } else if (TieneMasDeDosDecimales(donation.getAmount())) {
+			result.rejectValue("amount", "error.amount",
+					"Invalid format. Money can only have 2 decimal digits");
+			return "donations/createDonationForm";
+		} else if (donation.getCause().getClosed()) {
             result.rejectValue("amount", "error.amount", "The cause has been already completed");
             return "donations/createDonationForm";
         } else if ( donation.getAmount() <= 0) {
@@ -66,6 +70,15 @@ public class DonationController {
             this.clinicService.saveCause(donation.getCause());
             return "redirect:/causes";
         }
+	}
+
+	private boolean TieneMasDeDosDecimales(Double amount) {
+		 Boolean res = true;
+         Double n =  Math.floor(amount * 100) / 100;
+         if (amount - n == 0.) {
+             res = false;
+         } 
+         return res;
 	}
 
 }
