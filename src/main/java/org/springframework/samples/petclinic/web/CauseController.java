@@ -44,13 +44,6 @@ public class CauseController {
 		return vista;
 	}
 
-	//	@GetMapping(value = "/causes/{causeId}")
-	//	public String showCause(@PathVariable("causeId") int causeId, Map<String, Object> model) {
-	//		Cause cause = this.clinicService.findCauseById(causeId);
-	//		model.put("cause", cause);
-	//		return "causes/causeDetails";
-	//	}
-
 	@GetMapping(value = "/causes/{causeId}")
 	public ModelAndView showCause(@PathVariable("causeId") final int causeId, final Map<String, Object> model) {
 		Collection<Donation> donations;
