@@ -19,12 +19,10 @@ package org.springframework.samples.petclinic.service;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.model.*;
 import org.springframework.samples.petclinic.repository.*;
 import org.springframework.samples.petclinic.service.exceptions.PartialOverlapDateException;
@@ -41,24 +39,25 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ClinicService {
 
-	private PetRepository		petRepository;
+	private PetRepository petRepository;
 
-	private VetRepository		vetRepository;
+	private VetRepository vetRepository;
 
-	private OwnerRepository		ownerRepository;
+	private OwnerRepository ownerRepository;
 
-	private VisitRepository		visitRepository;
+	private VisitRepository visitRepository;
 
-	private BookRepository		bookRepository;
+	private BookRepository bookRepository;
 
-	private CauseRepository		causeRepository;
+	private CauseRepository causeRepository;
 
-	private DonationRepository	donationRepository;
-
+	private DonationRepository donationRepository;
 
 	@Autowired
-	public ClinicService(final PetRepository petRepository, final VetRepository vetRepository, final OwnerRepository ownerRepository, final VisitRepository visitRepository, final BookRepository bookRepository, final CauseRepository causeRepository,
-		final DonationRepository donationRepository) {
+	public ClinicService(final PetRepository petRepository, final VetRepository vetRepository,
+			final OwnerRepository ownerRepository, final VisitRepository visitRepository,
+			final BookRepository bookRepository, final CauseRepository causeRepository,
+			final DonationRepository donationRepository) {
 		this.petRepository = petRepository;
 		this.vetRepository = vetRepository;
 		this.ownerRepository = ownerRepository;
@@ -69,7 +68,7 @@ public class ClinicService {
 	}
 
 	@Transactional(readOnly = true)
-	public Collection<PetType> findPetTypes() throws DataAccessException {
+	public Collection<PetType> findPetTypes() {
 		return this.petRepository.findPetTypes();
 	}
 
@@ -79,89 +78,96 @@ public class ClinicService {
 	}
 
 	@Transactional(readOnly = true)
-	public Owner findOwnerById(final int id) throws DataAccessException {
+	public Owner findOwnerById(final int id) {
 		return this.ownerRepository.findById(id);
 	}
 
 	@Transactional(readOnly = true)
-	public Collection<Owner> findOwnerByLastName(final String lastName) throws DataAccessException {
+	public Collection<Owner> findOwnerByLastName(final String lastName) {
 		return this.ownerRepository.findByLastName(lastName);
 	}
 
 	@Transactional(readOnly = true)
-	public Book findBookById(final int id) throws DataAccessException {
+	public Book findBookById(final int id) {
 		return this.bookRepository.findById(id);
 	}
 
 	@Transactional
-	public void saveOwner(final Owner owner) throws DataAccessException {
+	public void saveOwner(final Owner owner) {
 		this.ownerRepository.save(owner);
 	}
 
 	@Transactional
-	public void saveVet(final Vet vet) throws DataAccessException {
+	public void saveVet(final Vet vet) {
 		this.vetRepository.save(vet);
 	}
 
 	@Transactional
-	public void saveVisit(final Visit visit) throws DataAccessException {
+	public void saveVisit(final Visit visit) {
 		this.visitRepository.save(visit);
 	}
 
-	public void saveBooking(Book book) throws DataAccessException, TotalOverlapDateException, PartialOverlapDateException {
+	public void saveBooking(Book book) throws TotalOverlapDateException, PartialOverlapDateException {
 		Collection<Book> books = bookRepository.findByPetOwnerId(book.getPet().getId());
 		Collection<Book> bookStart = books;
 		Collection<Book> bookFinish = books;
 
-		List<LocalDate> startDates = bookStart.stream().map(x->x.getStart()).collect(Collectors.toList());
-		List<LocalDate> finishDates = bookFinish.stream().map(x->x.getFinish()).collect(Collectors.toList());
+		// CAMBIAR LAMBDA EXPRESION
+		List<LocalDate> startDates = bookStart.stream().map(Book::getStart).collect(Collectors.toList());
+		List<LocalDate> finishDates = bookFinish.stream().map(Book::getFinish).collect(Collectors.toList());
 
 		String overlapType = overlapType(startDates, finishDates, book.getStart(), book.getFinish());
-		if(overlapType != "") {
-			if(overlapType == "complete") {
+		if (!overlapType.equals("")) {
+			if (overlapType.equals("complete")) {
 				throw new TotalOverlapDateException();
 			} else {
 				throw new PartialOverlapDateException();
 			}
-		}	else {
-		    bookRepository.save(book);
+		} else {
+			bookRepository.save(book);
 		}
-    }
+	}
 
-	private String overlapType(List<LocalDate> startDates, List<LocalDate> finishDates, LocalDate newBookStart, LocalDate newBookFinish) {
+	private String overlapType(List<LocalDate> startDates, List<LocalDate> finishDates, LocalDate newBookStart,
+			LocalDate newBookFinish) {
 		int i = 0;
 		String res = "";
-		while(i < startDates.size()) {
+		String partial = "partial";
+		String complete = "complete";
+		while (i < startDates.size()) {
 			LocalDate startBookI = startDates.get(i);
 			LocalDate finishBookI = finishDates.get(i);
-			if(((newBookStart.equals(startBookI) || newBookStart.isAfter(startBookI)) && ((newBookFinish.equals(finishBookI)) || newBookFinish.isBefore(finishBookI)))
-				|| (newBookStart.equals(startBookI) || newBookStart.isBefore(startBookI)) && ((newBookFinish.equals(finishBookI)) || newBookFinish.isAfter(finishBookI))) {
-				res = "complete";
-			}	else if(startBookI.isBefore(newBookFinish) && (finishBookI.isAfter(newBookFinish) || finishBookI.equals(newBookFinish))){
-				res = "partial";
-			}	else if(startBookI.isBefore(newBookStart) && finishBookI.isAfter(newBookStart)) {
-			    res = "partial";
+			if (((newBookStart.equals(startBookI) || newBookStart.isAfter(startBookI))
+					&& ((newBookFinish.equals(finishBookI)) || newBookFinish.isBefore(finishBookI)))
+					|| (newBookStart.equals(startBookI) || newBookStart.isBefore(startBookI))
+							&& ((newBookFinish.equals(finishBookI)) || newBookFinish.isAfter(finishBookI))) {
+				res = complete;
+			} else if (startBookI.isBefore(newBookFinish)
+					&& (finishBookI.isAfter(newBookFinish) || finishBookI.equals(newBookFinish))) {
+				res = partial;
+			} else if (startBookI.isBefore(newBookStart) && finishBookI.isAfter(newBookStart)) {
+				res = partial;
 			} else if (startBookI.equals(newBookFinish) || finishBookI.equals(newBookStart)) {
-                res = "partial";
-            }
+				res = partial;
+			}
 			i++;
 		}
 		return res;
 	}
 
 	@Transactional(readOnly = true)
-	public Pet findPetById(final int id) throws DataAccessException {
+	public Pet findPetById(final int id) {
 		return this.petRepository.findById(id);
 	}
 
 	@Transactional
-	public void savePet(final Pet pet) throws DataAccessException {
+	public void savePet(final Pet pet) {
 		this.petRepository.save(pet);
 	}
 
 	@Transactional(readOnly = true)
 	@Cacheable(value = "vets")
-	public Collection<Vet> findVets() throws DataAccessException {
+	public Collection<Vet> findVets() {
 		return this.vetRepository.findAll();
 	}
 
@@ -173,39 +179,39 @@ public class ClinicService {
 		return this.bookRepository.findByPetOwnerId(ownerId);
 	}
 
-	public void deletePet(Pet pet) throws DataAccessException {
+	public void deletePet(Pet pet) {
 		this.petRepository.delete(pet);
 	}
 
 	@Transactional
-	public void deleteBook(final Book book) throws DataAccessException {
+	public void deleteBook(final Book book) {
 		this.bookRepository.delete(book);
 	}
 
 	@Transactional(readOnly = true)
-	public Vet findVetById(final int id) throws DataAccessException {
+	public Vet findVetById(final int id) {
 		return this.vetRepository.findById(id);
 	}
 
 	@Transactional
-	public void deleteVet(final Vet vet) throws DataAccessException {
+	public void deleteVet(final Vet vet) {
 
 		this.vetRepository.delete(vet);
 	}
 
 	@Transactional(readOnly = true)
-	public Visit findVisitById(final int id) throws DataAccessException {
+	public Visit findVisitById(final int id) {
 		return this.visitRepository.findById(id);
 	}
 
 	@Transactional
-	public void deleteVisit(final Visit visit) throws DataAccessException {
+	public void deleteVisit(final Visit visit) {
 
 		this.visitRepository.delete(visit);
 	}
 
 	@Transactional
-	public void deleteOwner(final Owner owner) throws DataAccessException {
+	public void deleteOwner(final Owner owner) {
 
 		this.ownerRepository.delete(owner);
 	}
@@ -216,42 +222,42 @@ public class ClinicService {
 	}
 
 	@Transactional(readOnly = true)
-	public Cause findCauseById(final int causeId) throws DataAccessException {
+	public Cause findCauseById(final int causeId) {
 		return this.causeRepository.findById(causeId);
 	}
 
 	@Transactional(readOnly = true)
-	public Collection<Cause> findCauses() throws DataAccessException {
+	public Collection<Cause> findCauses() {
 		return this.causeRepository.findAll();
 	}
 
 	@Transactional
-	public void saveCause(final Cause cause) throws DataAccessException {
+	public void saveCause(final Cause cause) {
 		this.causeRepository.save(cause);
 	}
 
 	@Transactional
-	public void deleteCause(final Cause cause) throws DataAccessException {
+	public void deleteCause(final Cause cause) {
 		this.causeRepository.delete(cause);
 	}
 
 	@Transactional(readOnly = true)
-	public Donation findDonationById(final int donationId) throws DataAccessException {
+	public Donation findDonationById(final int donationId) {
 		return this.donationRepository.findById(donationId);
 	}
 
 	@Transactional(readOnly = true)
-	public Collection<Donation> findDonationsByCauseId(final int causeId) throws DataAccessException {
+	public Collection<Donation> findDonationsByCauseId(final int causeId) {
 		return this.donationRepository.findByCauseId(causeId);
 	}
 
 	@Transactional
-	public void saveDonation(final Donation donation) throws DataAccessException {
+	public void saveDonation(final Donation donation) {
 		this.donationRepository.save(donation);
 	}
 
 	@Transactional
-	public void deleteDonation(final Donation donation) throws DataAccessException {
+	public void deleteDonation(final Donation donation) {
 		this.donationRepository.delete(donation);
 	}
 
