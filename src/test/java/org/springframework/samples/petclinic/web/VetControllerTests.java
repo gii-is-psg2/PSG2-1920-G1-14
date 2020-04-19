@@ -7,11 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.samples.petclinic.model.Specialty;
 import org.springframework.samples.petclinic.model.Vet;
-import org.springframework.samples.petclinic.service.ClinicService;
-import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
+import org.springframework.samples.petclinic.service.VetService;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.hamcrest.xml.HasXPath.hasXPath;
 import static org.mockito.BDDMockito.given;
@@ -31,7 +28,7 @@ class VetControllerTests {
 	private VetController vetController;
 
 	@MockBean
-	private ClinicService clinicService;
+	private VetService vetService;
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -51,9 +48,9 @@ class VetControllerTests {
 		radiology.setId(1);
 		radiology.setName("radiology");
 		helen.addSpecialty(radiology);
-		given(this.clinicService.findVets()).willReturn(Lists.newArrayList(james, helen));
+		given(this.vetService.findVets()).willReturn(Lists.newArrayList(james, helen));
 	}
-        
+
 /*        @WithMockUser(value = "spring")
 	@Test
 	void testShowVetListHtml() throws Exception {

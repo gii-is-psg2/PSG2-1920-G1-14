@@ -23,7 +23,8 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.Visit;
-import org.springframework.samples.petclinic.service.ClinicService;
+import org.springframework.samples.petclinic.service.PetService;
+import org.springframework.samples.petclinic.service.VisitService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -43,12 +44,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Controller
 public class VisitController {
 
-	private final ClinicService clinicService;
+	private final VisitService visitService;
+    private final PetService petService;
 
 
 	@Autowired
-	public VisitController(final ClinicService clinicService) {
-		this.clinicService = clinicService;
+	public VisitController(final VisitService visitService, PetService petService) {
+		this.visitService = visitService;
+		this.petService = petService;
 	}
 
 	@InitBinder
@@ -61,13 +64,13 @@ public class VisitController {
 	 * - Make sure we always have fresh data - Since we do not use the session scope, make
 	 * sure that Pet object always has an id (Even though id is not part of the form
 	 * fields)
-	 * 
+	 *
 	 * @param petId
 	 * @return Pet
 	 */
 	@ModelAttribute("visit")
 	public Visit loadPetWithVisit(@PathVariable("petId") final int petId) {
-		Pet pet = this.clinicService.findPetById(petId);
+		Pet pet = this.petService.findPetById(petId);
 		Visit visit = new Visit();
 		pet.addVisit(visit);
 		return visit;
@@ -85,25 +88,25 @@ public class VisitController {
 		if (result.hasErrors()) {
 			return "pets/createOrUpdateVisitForm";
 		} else {
-			this.clinicService.saveVisit(visit);
+			this.visitService.saveVisit(visit);
 			return "redirect:/owners/{ownerId}";
 		}
 	}
 
 	@GetMapping(value = "/owners/*/pets/{petId}/visits")
 	public String showVisits(@PathVariable final int petId, final Map<String, Object> model) {
-		model.put("visits", this.clinicService.findPetById(petId).getVisits());
+		model.put("visits", this.petService.findPetById(petId).getVisits());
 		return "visitList";
 	}
 
 	@GetMapping(value = "/owners/{ownerId}/pets/{petId}/visits/{visitId}/delete")
 	public String delete(@PathVariable("visitId") final int visitId, @PathVariable("petId") final int petId, final ModelMap model) {
-		Visit visit = this.clinicService.findVisitById(visitId);
-		Pet pet = this.clinicService.findPetById(petId);
+		Visit visit = this.visitService.findVisitById(visitId);
+		Pet pet = this.petService.findPetById(petId);
 		pet.deleteVisit((Visit) model.getAttribute("visit"));
 		pet.deleteVisit(visit);
-		this.clinicService.savePet(pet);
-		this.clinicService.deleteVisit(visit);
+		this.petService.savePet(pet);
+		this.visitService.deleteVisit(visit);
 		return "redirect:/owners/{ownerId}";
 	}
 

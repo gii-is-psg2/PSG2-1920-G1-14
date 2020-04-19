@@ -9,7 +9,8 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Cause;
 import org.springframework.samples.petclinic.model.Donation;
-import org.springframework.samples.petclinic.service.ClinicService;
+import org.springframework.samples.petclinic.service.CauseService;
+import org.springframework.samples.petclinic.service.DonationService;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
@@ -21,7 +22,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Controller
 public class DonationController {
 
-	private ClinicService clinicService;
+	private DonationService donationService;
+	private CauseService causeService;
 
 	private static final String CREATE_OR_UPDATE_DONATION_VIEW = "donations/createDonationForm";
 	private static final String VAR_AMOUNT = "amount";
@@ -30,8 +32,9 @@ public class DonationController {
 
 
 	@Autowired
-	public DonationController(final ClinicService clinicService) {
-		this.clinicService = clinicService;
+	public DonationController(DonationService donationService, CauseService causeService) {
+		this.donationService = donationService;
+		this.causeService = causeService;
 	}
 
 	@InitBinder
@@ -42,7 +45,7 @@ public class DonationController {
 	@GetMapping(value = "/causes/{causeId}/donations/new")
 	public String initCreationDonationForm(final Map<String, Object> model, @PathVariable("causeId") final int causeId) {
 		Donation donation = new Donation();
-		Cause cause = this.clinicService.findCauseById(causeId);
+		Cause cause = this.causeService.findCauseById(causeId);
 		donation.setDate(LocalDate.now());
 		donation.setCause(cause);
 		model.put("donation", donation);
@@ -70,8 +73,8 @@ public class DonationController {
 			return CREATE_OR_UPDATE_DONATION_VIEW;
 		} else {
 			donation.setDate(LocalDate.now());
-			this.clinicService.saveDonation(donation);
-			this.clinicService.saveCause(donation.getCause());
+			this.donationService.saveDonation(donation);
+			this.causeService.saveCause(donation.getCause());
 			return "redirect:/causes";
 		}
 	}

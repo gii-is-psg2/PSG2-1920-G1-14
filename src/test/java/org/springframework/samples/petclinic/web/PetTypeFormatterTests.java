@@ -8,7 +8,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.samples.petclinic.model.PetType;
-import org.springframework.samples.petclinic.service.ClinicService;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -16,7 +15,7 @@ import java.util.Collection;
 import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.samples.petclinic.service.PetService;
 
 /**
  * Test class for {@link PetTypeFormatter}
@@ -27,13 +26,13 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 class PetTypeFormatterTests {
 
 	@Mock
-	private ClinicService clinicService;
+	private PetService petService;
 
 	private PetTypeFormatter petTypeFormatter;
 
 	@BeforeEach
 	void setup() {
-		petTypeFormatter = new PetTypeFormatter(clinicService);
+		petTypeFormatter = new PetTypeFormatter(petService);
 	}
 
 	@Test
@@ -46,14 +45,14 @@ class PetTypeFormatterTests {
 
 	@Test
 	void shouldParse() throws ParseException {
-		Mockito.when(clinicService.findPetTypes()).thenReturn(makePetTypes());
+		Mockito.when(petService.findPetTypes()).thenReturn(makePetTypes());
 		PetType petType = petTypeFormatter.parse("Bird", Locale.ENGLISH);
 		assertEquals("Bird", petType.getName());
 	}
 
 	@Test
 	void shouldThrowParseException() throws ParseException {
-		Mockito.when(clinicService.findPetTypes()).thenReturn(makePetTypes());
+		Mockito.when(petService.findPetTypes()).thenReturn(makePetTypes());
 		Assertions.assertThrows(ParseException.class, () -> {
 			petTypeFormatter.parse("Fish", Locale.ENGLISH);
 		});
