@@ -1,6 +1,5 @@
 package org.springframework.samples.petclinic.repository.springdatajpa;
 
-import org.springframework.dao.DataAccessException;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
@@ -13,5 +12,5 @@ public interface SpringDataBookRepository extends BookRepository, Repository<Boo
 
     @Override
     @Query("SELECT pet.bookings FROM Owner owner JOIN owner.pets pet WHERE owner.id = :id")
-    Collection<Book> findByPetOwnerId(@Param("id") int id) throws DataAccessException;
+    Collection<Book> findByPetOwnerId(@Param("id") int id);
 }

@@ -45,7 +45,8 @@ import javax.validation.Valid;
 public class VetController {
 
 	private static final String VIEWS_VET_CREATE_OR_UPDATE_FORM = "vets/createOrUpdateVetForm";
-	
+	private static final String SUCCESSFUL_REDIRECT_VIEW = "redirect:/vets";
+
 	private final ClinicService clinicService;
 
 	@Autowired
@@ -63,30 +64,30 @@ public class VetController {
 		model.put("vets", vets);
 		return "vets/vetList";
 	}
-	
+
 	@GetMapping(value = {"/vets/new"})
 	public String initCreationForm(ModelMap model) {
 		Vet vet = new Vet();
 		model.put("vet", vet);
 		return VIEWS_VET_CREATE_OR_UPDATE_FORM;
 	}
-	
-	
+
+
 	@PostMapping(value = "/vets/new")
 	public String processCreatingForm(@Valid Vet vet, BindingResult result) {
 		if(result.hasErrors()) {
 			return VIEWS_VET_CREATE_OR_UPDATE_FORM;
 		} else {
 			this.clinicService.saveVet(vet);
-			return "redirect:/vets";
-		}		
+			return SUCCESSFUL_REDIRECT_VIEW;
+		}
 	}
-	
+
 	@ModelAttribute("specialties")
 	public Collection<Specialty> populateSpecialities(){
 		return this.clinicService.findSpecialties();
 	}
-	
+
 	@GetMapping(value = { "/vets.xml"})
 	public @ResponseBody Vets showResourcesVetList() {
 		// Here we are returning an object of type 'Vets' rather than a collection of Vet
@@ -96,15 +97,15 @@ public class VetController {
 		vets.getVetList().addAll(this.clinicService.findVets());
 		return vets;
 	}
-	
+
 	@GetMapping(value = "/vets/{vetId}/edit")
 	public String initUpdateVetForm(@PathVariable("vetId") int vetId, Model model) {
 		Vet vet = this.clinicService.findVetById(vetId);
 		model.addAttribute(vet);
 		return VIEWS_VET_CREATE_OR_UPDATE_FORM;
-		
+
 	}
-	
+
 	@PostMapping(value = "/vets/{vetId}/edit")
 	public String processUpdateForm(@Valid Vet vet, @PathVariable("vetId") int vetId, BindingResult result, ModelMap model) {
 		if (result.hasErrors()) {
@@ -113,16 +114,16 @@ public class VetController {
 		}	else {
 			vet.setId(vetId);
 			this.clinicService.saveVet(vet);
-			return "redirect:/vets";
+			return SUCCESSFUL_REDIRECT_VIEW;
 		}
-		
+
 	}
-  
+
 	@GetMapping(value= "/vets/{vetId}/delete")
 	public String delete(@PathVariable("vetId") int vetId, ModelMap model) {
 		Vet vet = this.clinicService.findVetById(vetId);
 		this.clinicService.deleteVet(vet);
-		return "redirect:/vets";
+		return SUCCESSFUL_REDIRECT_VIEW;
 	}
 
 }

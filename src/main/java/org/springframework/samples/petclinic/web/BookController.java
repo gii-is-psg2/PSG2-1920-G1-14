@@ -20,6 +20,10 @@ public class BookController {
 
     private final ClinicService clinicService;
 
+    private static final String CREATE_OR_UPDATE_BOOK_VIEW = "pets/createOrUpdateBookForm";
+    private static final String OVERLAP_PARTIAL = "partialOverlap";
+    private static final String OVERLAP_COMPLETE = "completeOverlap";
+
     @Autowired
     public BookController(ClinicService clinicService) {
         this.clinicService = clinicService;
@@ -41,7 +45,7 @@ public class BookController {
     // Spring MVC calls method loadPetWithVisit(...) before initNewVisitForm is called
     @GetMapping(value = "/owners/*/pets/{petId}/books/new")
     public String initNewBookForm(@PathVariable("petId") int petId, Map<String, Object> model) {
-        return "pets/createOrUpdateBookForm";
+        return CREATE_OR_UPDATE_BOOK_VIEW;
     }
 
     @InitBinder("book")
@@ -52,17 +56,17 @@ public class BookController {
 	@PostMapping(value = "/owners/{ownerId}/pets/{petId}/books/new")
 	public String processNewBookForm(@Valid Book book, BindingResult result) {
 		if (result.hasErrors()) {
-			return "pets/createOrUpdateBookForm";
+			return CREATE_OR_UPDATE_BOOK_VIEW;
 		} else {
 			try {
 				this.clinicService.saveBooking(book);
 			} catch (TotalOverlapDateException e) {
-				result.rejectValue("start", "completeOverlap","completeOverlap");
-				return "pets/createOrUpdateBookForm";
+				result.rejectValue("start", OVERLAP_COMPLETE,OVERLAP_COMPLETE);
+				return CREATE_OR_UPDATE_BOOK_VIEW;
 			} catch (PartialOverlapDateException e) {
-				result.rejectValue("start", "partialOverlap","partialOverlap");
-                result.rejectValue("finish", "partialOverlap","partialOverlap");
-				return "pets/createOrUpdateBookForm";
+				result.rejectValue("start", OVERLAP_PARTIAL,OVERLAP_PARTIAL);
+                result.rejectValue("finish", OVERLAP_PARTIAL,OVERLAP_PARTIAL);
+				return CREATE_OR_UPDATE_BOOK_VIEW;
 			}
 			return "redirect:/owners/{ownerId}";
 		}

@@ -41,6 +41,7 @@ import java.util.Collection;
 public class PetController {
 
 	private static final String VIEWS_PETS_CREATE_OR_UPDATE_FORM = "pets/createOrUpdatePetForm";
+    private static final String SUCCESSFUL_REDIRECT_VIEW = "redirect:/owners/{ownerId}";
 
 	private final ClinicService clinicService;
 
@@ -89,7 +90,7 @@ public class PetController {
 		else {
 			owner.addPet(pet);
 			this.clinicService.savePet(pet);
-			return "redirect:/owners/{ownerId}";
+			return SUCCESSFUL_REDIRECT_VIEW;
 		}
 	}
 
@@ -109,7 +110,7 @@ public class PetController {
 		else {
 		    pet.setOwner(owner);
 			this.clinicService.savePet(pet);
-			return "redirect:/owners/{ownerId}";
+			return SUCCESSFUL_REDIRECT_VIEW;
 		}
 	}
 
@@ -118,7 +119,7 @@ public class PetController {
 		Pet pet = this.clinicService.findPetById(petId);
 		owner.deletePet(pet);
 		this.clinicService.deletePet(pet);
-		return "redirect:/owners/{ownerId}";
+		return SUCCESSFUL_REDIRECT_VIEW;
 	}
 
 }

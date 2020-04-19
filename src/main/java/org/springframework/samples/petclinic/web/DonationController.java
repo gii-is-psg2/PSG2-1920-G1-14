@@ -23,6 +23,11 @@ public class DonationController {
 
 	private ClinicService clinicService;
 
+	private static final String CREATE_OR_UPDATE_DONATION_VIEW = "donations/createDonationForm";
+	private static final String VAR_AMOUNT = "amount";
+    private static final String ERROR_AMOUNT = "error.amount";
+
+
 
 	@Autowired
 	public DonationController(final ClinicService clinicService) {
@@ -41,28 +46,28 @@ public class DonationController {
 		donation.setDate(LocalDate.now());
 		donation.setCause(cause);
 		model.put("donation", donation);
-		return "donations/createDonationForm";
+		return CREATE_OR_UPDATE_DONATION_VIEW;
 	}
 
 	@PostMapping(value = "/causes/{causeId}/donations/new")
 	public String processCreationDonationForm(@Valid final Donation donation, final BindingResult result, @PathVariable("causeId") final int causeId) {
 		if (result.hasErrors()) {
-			return "donations/createDonationForm";
-		} else if (this.TieneMasDeDosDecimales(donation.getAmount())) {
-			result.rejectValue("amount", "error.amount", "Invalid format. Money can only have 2 decimal digits");
-			return "donations/createDonationForm";
+			return CREATE_OR_UPDATE_DONATION_VIEW;
+		} else if (this.tieneMasDeDosDecimales(donation.getAmount())) {
+			result.rejectValue(VAR_AMOUNT, ERROR_AMOUNT, "Invalid format. Money can only have 2 decimal digits");
+			return CREATE_OR_UPDATE_DONATION_VIEW;
 		} else if (donation.getCause().getClosed()) {
-			result.rejectValue("amount", "error.amount", "The cause has been already completed");
-			return "donations/createDonationForm";
+			result.rejectValue(VAR_AMOUNT, ERROR_AMOUNT, "The cause has been already completed");
+			return CREATE_OR_UPDATE_DONATION_VIEW;
 		} else if (donation.getAmount() <= 0) {
-			result.rejectValue("amount", "error.amount", "The donation can not be 0");
-			return "donations/createDonationForm";
+			result.rejectValue(VAR_AMOUNT, ERROR_AMOUNT, "The donation can not be 0");
+			return CREATE_OR_UPDATE_DONATION_VIEW;
 		} else if (donation.getCause().getAmount() + donation.getAmount() > donation.getCause().getBudgetTarget()) {
-			result.rejectValue("amount", "error.amount", "The donation cant be higher than the remaining amount");
-			return "donations/createDonationForm";
-		} else if (donation.getClient() == null || donation.getClient() == "") {
-			result.rejectValue("client", "error.client", "You must introduce a name");
-			return "donations/createDonationForm";
+			result.rejectValue(VAR_AMOUNT, ERROR_AMOUNT, "The donation cant be higher than the remaining amount");
+			return CREATE_OR_UPDATE_DONATION_VIEW;
+		} else if (donation.getClient() == null || donation.getClient().equals("")) {
+			result.rejectValue(VAR_AMOUNT, ERROR_AMOUNT, "You must introduce a name");
+			return CREATE_OR_UPDATE_DONATION_VIEW;
 		} else {
 			donation.setDate(LocalDate.now());
 			this.clinicService.saveDonation(donation);
@@ -71,8 +76,8 @@ public class DonationController {
 		}
 	}
 
-	private boolean TieneMasDeDosDecimales(final Double amount) {
-		Boolean res = true;
+	private boolean tieneMasDeDosDecimales(final Double amount) {
+		boolean res = true;
 		Double n = Math.floor(amount * 100) / 100;
 		if (amount - n == 0.) {
 			res = false;
