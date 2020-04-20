@@ -33,11 +33,19 @@
 					<td><c:out value="${cause.organization}" /></td>
 					<td><fmt:formatNumber type="currency" maxFractionDigits="2" value="${cause.amount}" currencySymbol="&euro;" /></td>
 
-					<td><spring:url value="/causes/{causeId}/donations/new"
-							var="newDonationUrl">
-							<spring:param name="causeId" value="${cause.id}" />
-						</spring:url> <a href="${fn:escapeXml(newDonationUrl)}">Make a donation</a></td>
-					
+					<td>
+                        <c:choose>
+                            <c:when test="${cause.closed}">
+                                Budget target achieved
+                            </c:when>
+                            <c:otherwise>
+                            <spring:url value="/causes/{causeId}/donations/new"
+                                        var="newDonationUrl">
+                                <spring:param name="causeId" value="${cause.id}" />
+                            </spring:url> <a href="${fn:escapeXml(newDonationUrl)}">Make a donation</a>
+                            </c:otherwise>
+                        </c:choose>
+                    </td>
 				</tr>
 			</c:forEach>
 		</tbody>

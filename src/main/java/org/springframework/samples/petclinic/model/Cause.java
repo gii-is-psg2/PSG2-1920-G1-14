@@ -11,6 +11,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 
 @Entity
 @Table(name = "causes")
@@ -19,19 +20,21 @@ public class Cause extends BaseEntity{
 	@Column(name = "name")
 	@NotBlank
 	private String name;
-	
+
 	@Column(name = "description")
 	@NotBlank
 	private String description;
-	
+
+
 	@Column(name = "budget_target")
 	@NotNull
+    @Positive
 	private Double budgetTarget;
-	
+
 	@Column(name = "organization")
 	@NotBlank
 	private String organization;
-	
+
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "cause", fetch = FetchType.EAGER)
     private Set<Donation> donations;
 
@@ -74,7 +77,7 @@ public class Cause extends BaseEntity{
 	public void setDonations(Set<Donation> donations) {
 		this.donations = donations;
 	}
-	
+
 	@Transient
 	public Double getAmount() {
 		Double res = 0.0;
@@ -83,16 +86,16 @@ public class Cause extends BaseEntity{
 		}
 			return res;
 	}
-	
+
 	@Transient
 	public Boolean getClosed() {
-		Boolean res = false;		
+		Boolean res = false;
 		if(getAmount()>= getBudgetTarget()) {
 			res = true;
 		}
         	return res;
 	}
-	
-	
-	
+
+
+
 }

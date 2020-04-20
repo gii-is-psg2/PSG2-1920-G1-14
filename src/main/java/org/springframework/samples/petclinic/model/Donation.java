@@ -8,6 +8,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -20,12 +21,14 @@ public class Donation extends BaseEntity{
     private LocalDate date;
 
 	@NotNull
+    @Positive
 	@Column(name = "amount")
 	private Double amount;
 
 	@NotNull
-	@Column(name = "client")
-	private String client;
+    @ManyToOne
+	@JoinColumn
+	private Owner client;
 
 	@NotNull
 	@ManyToOne
@@ -48,11 +51,11 @@ public class Donation extends BaseEntity{
 		this.amount = amount;
 	}
 
-	public String getClient() {
+	public Owner getClient() {
 		return client;
 	}
 
-	public void setClient(String client) {
+	public void setClient(Owner client) {
 		this.client = client;
 	}
 
