@@ -34,7 +34,8 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.PetType;
-import org.springframework.samples.petclinic.service.ClinicService;
+import org.springframework.samples.petclinic.service.OwnerService;
+import org.springframework.samples.petclinic.service.PetService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -56,7 +57,10 @@ class PetControllerTests {
 
 
 	@MockBean
-	private ClinicService clinicService;
+	private PetService petService;
+
+    @MockBean
+    private OwnerService ownerService;
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -66,9 +70,9 @@ class PetControllerTests {
 		PetType cat = new PetType();
 		cat.setId(3);
 		cat.setName("hamster");
-		given(this.clinicService.findPetTypes()).willReturn(Lists.newArrayList(cat));
-		given(this.clinicService.findOwnerById(TEST_OWNER_ID)).willReturn(new Owner());
-		given(this.clinicService.findPetById(TEST_PET_ID)).willReturn(new Pet());
+		given(this.petService.findPetTypes()).willReturn(Lists.newArrayList(cat));
+		given(this.ownerService.findOwnerById(TEST_OWNER_ID)).willReturn(new Owner());
+		given(this.petService.findPetById(TEST_PET_ID)).willReturn(new Pet());
 	}
 
 	@WithMockUser(value = "spring")

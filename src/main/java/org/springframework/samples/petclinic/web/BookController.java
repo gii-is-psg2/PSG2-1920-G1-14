@@ -3,7 +3,8 @@ package org.springframework.samples.petclinic.web;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.Book;
-import org.springframework.samples.petclinic.service.ClinicService;
+import org.springframework.samples.petclinic.service.BookService;
+import org.springframework.samples.petclinic.service.PetService;
 import org.springframework.samples.petclinic.service.exceptions.PartialOverlapDateException;
 import org.springframework.samples.petclinic.service.exceptions.TotalOverlapDateException;
 import org.springframework.stereotype.Controller;
@@ -18,11 +19,17 @@ import java.util.Map;
 @Controller
 public class BookController {
 
-    private final ClinicService clinicService;
+    private final PetService petService;
+    private final BookService bookService;
+
+    private static final String CREATE_OR_UPDATE_BOOK_VIEW = "pets/createOrUpdateBookForm";
+    private static final String OVERLAP_PARTIAL = "partialOverlap";
+    private static final String OVERLAP_COMPLETE = "completeOverlap";
 
     @Autowired
-    public BookController(ClinicService clinicService) {
-        this.clinicService = clinicService;
+    public BookController(PetService petService, BookService bookService) {
+        this.petService = petService;
+        this.bookService = bookService;
     }
 
     @InitBinder
@@ -32,7 +39,7 @@ public class BookController {
 
     @ModelAttribute("book")
     public Book loadPetWithBook(@PathVariable("petId") int petId) {
-        Pet pet = this.clinicService.findPetById(petId);
+        Pet pet = this.petService.findPetById(petId);
         Book book = new Book();
         pet.addBooking(book);
         return book;
@@ -41,7 +48,7 @@ public class BookController {
     // Spring MVC calls method loadPetWithVisit(...) before initNewVisitForm is called
     @GetMapping(value = "/owners/*/pets/{petId}/books/new")
     public String initNewBookForm(@PathVariable("petId") int petId, Map<String, Object> model) {
-        return "pets/createOrUpdateBookForm";
+        return CREATE_OR_UPDATE_BOOK_VIEW;
     }
 
     @InitBinder("book")
@@ -52,17 +59,17 @@ public class BookController {
 	@PostMapping(value = "/owners/{ownerId}/pets/{petId}/books/new")
 	public String processNewBookForm(@Valid Book book, BindingResult result) {
 		if (result.hasErrors()) {
-			return "pets/createOrUpdateBookForm";
+			return CREATE_OR_UPDATE_BOOK_VIEW;
 		} else {
 			try {
-				this.clinicService.saveBooking(book);
+				this.bookService.saveBooking(book);
 			} catch (TotalOverlapDateException e) {
-				result.rejectValue("start", "completeOverlap","completeOverlap");
-				return "pets/createOrUpdateBookForm";
+				result.rejectValue("start", OVERLAP_COMPLETE,OVERLAP_COMPLETE);
+				return CREATE_OR_UPDATE_BOOK_VIEW;
 			} catch (PartialOverlapDateException e) {
-				result.rejectValue("start", "partialOverlap","partialOverlap");
-                result.rejectValue("finish", "partialOverlap","partialOverlap");
-				return "pets/createOrUpdateBookForm";
+				result.rejectValue("start", OVERLAP_PARTIAL,OVERLAP_PARTIAL);
+                result.rejectValue("finish", OVERLAP_PARTIAL,OVERLAP_PARTIAL);
+				return CREATE_OR_UPDATE_BOOK_VIEW;
 			}
 			return "redirect:/owners/{ownerId}";
 		}
@@ -70,14 +77,14 @@ public class BookController {
 
     @GetMapping(value= "/owners/{ownerId}/pets/{petId}/books/{bookId}/delete")
     public String delete(@PathVariable("bookId") int bookId, @PathVariable("petId") int petId, ModelMap model) {
-        Book book = this.clinicService.findBookById(bookId);
-        Pet pet = this.clinicService.findPetById(petId);
+        Book book = this.bookService.findBookById(bookId);
+        Pet pet = this.petService.findPetById(petId);
 
         pet.deleteBook((Book) model.getAttribute("book"));
         pet.deleteBook(book);
 
-        this.clinicService.savePet(pet);
-        this.clinicService.deleteBook(book);
+        this.petService.savePet(pet);
+        this.bookService.deleteBook(book);
         return "redirect:/owners/{ownerId}";
     }
 }

@@ -24,7 +24,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.Visit;
-import org.springframework.samples.petclinic.service.ClinicService;
+import org.springframework.samples.petclinic.service.OwnerService;
+import org.springframework.samples.petclinic.service.PetService;
+import org.springframework.samples.petclinic.service.VisitService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -44,11 +46,15 @@ public class OwnerController {
 
 	private static final String VIEWS_OWNER_CREATE_OR_UPDATE_FORM = "owners/createOrUpdateOwnerForm";
 
-	private final ClinicService clinicService;
+	private OwnerService ownerService;
+	private PetService petService;
+	private VisitService visitService;
 
 	@Autowired
-	public OwnerController(ClinicService clinicService) {
-		this.clinicService = clinicService;
+	public OwnerController(OwnerService ownerService, PetService petService, VisitService visitService) {
+	    this.ownerService = ownerService;
+	    this.petService = petService;
+	    this.visitService = visitService;
 	}
 
 	@InitBinder
@@ -69,7 +75,7 @@ public class OwnerController {
 			return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
 		}
 		else {
-			this.clinicService.saveOwner(owner);
+			this.ownerService.saveOwner(owner);
 			return "redirect:/owners/" + owner.getId();
 		}
 	}
@@ -89,7 +95,7 @@ public class OwnerController {
 		}
 
 		// find owners by last name
-		Collection<Owner> results = this.clinicService.findOwnerByLastName(owner.getLastName());
+		Collection<Owner> results = this.ownerService.findOwnerByLastName(owner.getLastName());
 		if (results.isEmpty()) {
 			// no owners found
 			result.rejectValue("lastName", "notFound", "not found");
@@ -109,7 +115,7 @@ public class OwnerController {
 
 	@GetMapping(value = "/owners/{ownerId}/edit")
 	public String initUpdateOwnerForm(@PathVariable("ownerId") int ownerId, Model model) {
-		Owner owner = this.clinicService.findOwnerById(ownerId);
+		Owner owner = this.ownerService.findOwnerById(ownerId);
 		model.addAttribute(owner);
 		return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
 	}
@@ -122,7 +128,7 @@ public class OwnerController {
 		}
 		else {
 			owner.setId(ownerId);
-			this.clinicService.saveOwner(owner);
+			this.ownerService.saveOwner(owner);
 			return "redirect:/owners/{ownerId}";
 		}
 	}
@@ -135,23 +141,23 @@ public class OwnerController {
 	@GetMapping("/owners/{ownerId}")
 	public ModelAndView showOwner(@PathVariable("ownerId") int ownerId) {
 		ModelAndView mav = new ModelAndView("owners/ownerDetails");
-		mav.addObject(this.clinicService.findOwnerById(ownerId));
+		mav.addObject(this.ownerService.findOwnerById(ownerId));
 		return mav;
 	}
-	
+
 	@GetMapping(value= "/owners/{ownerId}/delete")
 	public String delete(@PathVariable("ownerId") int ownerId, ModelMap model) {
-		Owner owner = this.clinicService.findOwnerById(ownerId);
+		Owner owner = this.ownerService.findOwnerById(ownerId);
 		for(Pet pet : owner.getPets() ) {
 		for(Visit v : pet.getVisits() ) {
 			pet.deleteVisit(v);
-			this.clinicService.deleteVisit(v);
+			this.visitService.deleteVisit(v);
 		}
 		owner.deletePet(pet);
-		this.clinicService.deletePet(pet);
+		this.petService.deletePet(pet);
 		}
-		
-		this.clinicService.deleteOwner(owner);
+
+		this.ownerService.deleteOwner(owner);
 		return "redirect:/owners";
 	}
 
