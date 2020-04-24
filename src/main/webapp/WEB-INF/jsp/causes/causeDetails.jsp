@@ -55,7 +55,7 @@
                     <fmt:formatNumber type="currency" maxFractionDigits="2" value="${donation.amount}" currencySymbol="&euro;" /></td>
                 </td>
                 <td>
-                    <c:out value="${donation.client}"/>
+                    <c:out value="${donation.client.firstName} ${donation.client.lastName}"/>
                 </td>
             </tr>
         </c:forEach>

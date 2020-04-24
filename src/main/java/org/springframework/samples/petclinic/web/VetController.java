@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Specialty;
 import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.model.Vets;
-import org.springframework.samples.petclinic.service.ClinicService;
+import org.springframework.samples.petclinic.service.VetService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -45,12 +45,13 @@ import javax.validation.Valid;
 public class VetController {
 
 	private static final String VIEWS_VET_CREATE_OR_UPDATE_FORM = "vets/createOrUpdateVetForm";
-	
-	private final ClinicService clinicService;
+	private static final String SUCCESSFUL_REDIRECT_VIEW = "redirect:/vets";
+
+	private VetService vetService;
 
 	@Autowired
-	public VetController(ClinicService clinicService) {
-		this.clinicService = clinicService;
+	public VetController(VetService vetService) {
+		this.vetService = vetService;
 	}
 
 	@GetMapping(value = { "/vets"})
@@ -59,52 +60,52 @@ public class VetController {
 		// objects
 		// so it is simpler for Object-Xml mapping
 		Vets vets = new Vets();
-		vets.getVetList().addAll(this.clinicService.findVets());
+		vets.getVetList().addAll(this.vetService.findVets());
 		model.put("vets", vets);
 		return "vets/vetList";
 	}
-	
+
 	@GetMapping(value = {"/vets/new"})
 	public String initCreationForm(ModelMap model) {
 		Vet vet = new Vet();
 		model.put("vet", vet);
 		return VIEWS_VET_CREATE_OR_UPDATE_FORM;
 	}
-	
-	
+
+
 	@PostMapping(value = "/vets/new")
 	public String processCreatingForm(@Valid Vet vet, BindingResult result) {
 		if(result.hasErrors()) {
 			return VIEWS_VET_CREATE_OR_UPDATE_FORM;
 		} else {
-			this.clinicService.saveVet(vet);
-			return "redirect:/vets";
-		}		
+			this.vetService.saveVet(vet);
+			return SUCCESSFUL_REDIRECT_VIEW;
+		}
 	}
-	
+
 	@ModelAttribute("specialties")
 	public Collection<Specialty> populateSpecialities(){
-		return this.clinicService.findSpecialties();
+		return this.vetService.findSpecialties();
 	}
-	
+
 	@GetMapping(value = { "/vets.xml"})
 	public @ResponseBody Vets showResourcesVetList() {
 		// Here we are returning an object of type 'Vets' rather than a collection of Vet
 		// objects
 		// so it is simpler for JSon/Object mapping
 		Vets vets = new Vets();
-		vets.getVetList().addAll(this.clinicService.findVets());
+		vets.getVetList().addAll(this.vetService.findVets());
 		return vets;
 	}
-	
+
 	@GetMapping(value = "/vets/{vetId}/edit")
 	public String initUpdateVetForm(@PathVariable("vetId") int vetId, Model model) {
-		Vet vet = this.clinicService.findVetById(vetId);
+		Vet vet = this.vetService.findVetById(vetId);
 		model.addAttribute(vet);
 		return VIEWS_VET_CREATE_OR_UPDATE_FORM;
-		
+
 	}
-	
+
 	@PostMapping(value = "/vets/{vetId}/edit")
 	public String processUpdateForm(@Valid Vet vet, @PathVariable("vetId") int vetId, BindingResult result, ModelMap model) {
 		if (result.hasErrors()) {
@@ -112,17 +113,17 @@ public class VetController {
 			return VIEWS_VET_CREATE_OR_UPDATE_FORM;
 		}	else {
 			vet.setId(vetId);
-			this.clinicService.saveVet(vet);
-			return "redirect:/vets";
+			this.vetService.saveVet(vet);
+			return SUCCESSFUL_REDIRECT_VIEW;
 		}
-		
+
 	}
-  
+
 	@GetMapping(value= "/vets/{vetId}/delete")
 	public String delete(@PathVariable("vetId") int vetId, ModelMap model) {
-		Vet vet = this.clinicService.findVetById(vetId);
-		this.clinicService.deleteVet(vet);
-		return "redirect:/vets";
+		Vet vet = this.vetService.findVetById(vetId);
+		this.vetService.deleteVet(vet);
+		return SUCCESSFUL_REDIRECT_VIEW;
 	}
 
 }

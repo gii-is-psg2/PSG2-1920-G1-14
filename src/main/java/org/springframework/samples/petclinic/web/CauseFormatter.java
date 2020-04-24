@@ -3,7 +3,7 @@ package org.springframework.samples.petclinic.web;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.Formatter;
 import org.springframework.samples.petclinic.model.Cause;
-import org.springframework.samples.petclinic.service.ClinicService;
+import org.springframework.samples.petclinic.service.CauseService;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
@@ -12,17 +12,17 @@ import java.util.Locale;
 @Component
 public class CauseFormatter implements Formatter<Cause> {
 
-    private ClinicService service;
+    private CauseService causeService;
 
     @Autowired
-    public CauseFormatter(ClinicService service) {
-        this.service = service;
+    public CauseFormatter(CauseService service) {
+        this.causeService = service;
     }
 
     @Override
     public Cause parse(String stringId, Locale locale) throws ParseException {
         int id = Integer.parseInt(stringId);
-        return this.service.findCauseById(id);
+        return this.causeService.findCauseById(id);
     }
 
     @Override

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.samples.petclinic.model;
 
 import java.util.ArrayList;
@@ -24,7 +25,6 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Digits;
@@ -48,25 +48,26 @@ public class Owner extends Person {
 
 	@Column(name = "address")
 	@NotEmpty
-	private String address;
+	private String		address;
 
 	@Column(name = "city")
 	@NotEmpty
-	private String city;
+	private String		city;
 
 	@Column(name = "telephone")
 	@NotEmpty
 	@Digits(fraction = 0, integer = 10)
-	private String telephone;
+	private String		telephone;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "owner")
-	private Set<Pet> pets;
-	
+	private Set<Pet>	pets;
+
+
 	public String getAddress() {
 		return this.address;
 	}
 
-	public void setAddress(String address) {
+	public void setAddress(final String address) {
 		this.address = address;
 	}
 
@@ -74,7 +75,7 @@ public class Owner extends Person {
 		return this.city;
 	}
 
-	public void setCity(String city) {
+	public void setCity(final String city) {
 		this.city = city;
 	}
 
@@ -82,7 +83,7 @@ public class Owner extends Person {
 		return this.telephone;
 	}
 
-	public void setTelephone(String telephone) {
+	public void setTelephone(final String telephone) {
 		this.telephone = telephone;
 	}
 
@@ -93,38 +94,42 @@ public class Owner extends Person {
 		return this.pets;
 	}
 
-	protected void setPetsInternal(Set<Pet> pets) {
+	protected void setPetsInternal(final Set<Pet> pets) {
 		this.pets = pets;
 	}
 
 	public List<Pet> getPets() {
-		List<Pet> sortedPets = new ArrayList<>(getPetsInternal());
+		List<Pet> sortedPets = new ArrayList<>(this.getPetsInternal());
 		PropertyComparator.sort(sortedPets, new MutableSortDefinition("name", true, true));
 		return Collections.unmodifiableList(sortedPets);
 	}
 
-	public void addPet(Pet pet) {
-		getPetsInternal().add(pet);
+	public void addPet(final Pet pet) {
+		this.getPetsInternal().add(pet);
 		pet.setOwner(this);
 	}
 
 	/**
 	 * Return the Pet with the given name, or null if none found for this Owner.
-	 * @param name to test
+	 * 
+	 * @param name
+	 *            to test
 	 * @return true if pet name is already in use
 	 */
-	public Pet getPet(String name) {
-		return getPet(name, false);
+	public Pet getPet(final String name) {
+		return this.getPet(name, false);
 	}
 
 	/**
 	 * Return the Pet with the given name, or null if none found for this Owner.
-	 * @param name to test
+	 * 
+	 * @param name
+	 *            to test
 	 * @return true if pet name is already in use
 	 */
-	public Pet getPet(String name, boolean ignoreNew) {
+	public Pet getPet(String name, final boolean ignoreNew) {
 		name = name.toLowerCase();
-		for (Pet pet : getPetsInternal()) {
+		for (Pet pet : this.getPetsInternal()) {
 			if (!ignoreNew || !pet.isNew()) {
 				String compName = pet.getName();
 				compName = compName.toLowerCase();
@@ -135,8 +140,8 @@ public class Owner extends Person {
 		}
 		return null;
 	}
-	
-	public void deletePet( Pet pet ) {
+
+	public void deletePet(final Pet pet) {
 		this.getPetsInternal().remove(pet);
 	}
 
@@ -144,14 +149,7 @@ public class Owner extends Person {
 	public String toString() {
 		return new ToStringCreator(this)
 
-				.append("id", this.getId()).append("new", this.isNew()).append("lastName", this.getLastName())
-				.append("firstName", this.getFirstName()).append("address", this.address).append("city", this.city)
-				.append("telephone", this.telephone).toString();
+			.append("id", this.getId()).append("new", this.isNew()).append("lastName", this.getLastName()).append("firstName", this.getFirstName()).append("address", this.address).append("city", this.city).append("telephone", this.telephone).toString();
 	}
 
-	
-	
-	
-
-	
 }

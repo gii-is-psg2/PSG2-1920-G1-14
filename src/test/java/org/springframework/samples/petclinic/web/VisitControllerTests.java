@@ -4,11 +4,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.model.Pet;
-import org.springframework.samples.petclinic.service.ClinicService;
-import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
+import org.springframework.samples.petclinic.service.PetService;
+import org.springframework.samples.petclinic.service.VisitService;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.RequestPostProcessor;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.BDDMockito.given;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -32,14 +30,17 @@ class VisitControllerTests {
 	private VisitController visitController;
 
 	@MockBean
-	private ClinicService clinicService;
+	private VisitService visitService;
+
+    @MockBean
+    private PetService petService;
 
 	@Autowired
 	private MockMvc mockMvc;
 
 	@BeforeEach
 	void setup() {
-		given(this.clinicService.findPetById(TEST_PET_ID)).willReturn(new Pet());
+		given(this.petService.findPetById(TEST_PET_ID)).willReturn(new Pet());
 	}
 
         @WithMockUser(value = "spring")
@@ -53,7 +54,7 @@ class VisitControllerTests {
         @Test
 	void testProcessNewVisitFormSuccess() throws Exception {
 		mockMvc.perform(post("/owners/*/pets/{petId}/visits/new", TEST_PET_ID).param("name", "George")
-				.param("description", "Visit Description"))                                
+				.param("description", "Visit Description"))
                 .andExpect(status().is3xxRedirection())
 				.andExpect(view().name("redirect:/owners/{ownerId}"));
 	}
