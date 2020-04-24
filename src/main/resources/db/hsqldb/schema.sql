@@ -89,7 +89,8 @@ CREATE TABLE donations (
     cause_id  		INTEGER NOT NULL,
     donation_date   DATE,
     amount  		DOUBLE NOT NULL,
-    client 			VARCHAR(255)
+    client_id 		INTEGER NOT NULL
 );
 ALTER TABLE donations ADD CONSTRAINT fk_donations_causes FOREIGN KEY (cause_id) REFERENCES causes (id);
+ALTER TABLE donations ADD CONSTRAINT fk_donations_owners FOREIGN KEY (client_id) REFERENCES owners (id);
 CREATE INDEX donations_cause_id ON donations (cause_id);

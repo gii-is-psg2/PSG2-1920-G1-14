@@ -19,6 +19,11 @@ public class OwnerService {
     }
 
     @Transactional(readOnly = true)
+    public Collection<Owner> findAllOwners() {
+        return this.ownerRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
     public Owner findOwnerById(final int id) {
         return this.ownerRepository.findById(id);
     }
