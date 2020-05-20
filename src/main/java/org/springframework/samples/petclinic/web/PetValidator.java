@@ -15,6 +15,8 @@
  */
 package org.springframework.samples.petclinic.web;
 
+import java.time.LocalDate;
+
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
@@ -33,6 +35,8 @@ import org.springframework.validation.Validator;
 public class PetValidator implements Validator {
 
 	private static final String REQUIRED = "required";
+	
+	private static final String MUST_BE_PAST_OR_PRESENT = "must be past or present";
 
 	@Override
 	public void validate(Object obj, Errors errors) {
@@ -50,6 +54,10 @@ public class PetValidator implements Validator {
 		// birth date validation
 		if (pet.getBirthDate() == null) {
 			errors.rejectValue("birthDate", REQUIRED, REQUIRED);
+		}
+		
+		if(pet.getBirthDate().isAfter(LocalDate.now())) {
+			errors.rejectValue("birthDate", MUST_BE_PAST_OR_PRESENT, MUST_BE_PAST_OR_PRESENT);
 		}
 	}
 
