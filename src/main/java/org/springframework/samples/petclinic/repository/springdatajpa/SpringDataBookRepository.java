@@ -11,6 +11,6 @@ import java.util.Collection;
 public interface SpringDataBookRepository extends BookRepository, Repository<Book, Integer> {
 
     @Override
-    @Query("SELECT pet.bookings FROM Owner owner JOIN owner.pets pet WHERE owner.id = :id")
+    @Query("SELECT pet.bookings FROM Owner owner JOIN owner.pets pet WHERE pet.id = :id")
     Collection<Book> findByPetOwnerId(@Param("id") int id);
 }
