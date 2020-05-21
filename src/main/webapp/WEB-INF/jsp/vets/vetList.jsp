@@ -3,7 +3,6 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="petclinic" tagdir="/WEB-INF/tags" %>
 
 <petclinic:layout pageName="vets">
@@ -33,7 +32,7 @@
             <spring:url value="/vets/{vetId}/delete" var="vetDeleteUrl">
               <spring:param name="vetId" value="${vet.id}"/>
             </spring:url>
-            <a href="${fn:escapeXml(vetDeleteUrl)}">Delete Vet</a>
+            <a role="button" class="btn btn-xs btn-danger" href="${fn:escapeXml(vetDeleteUrl)}">Delete Vet</a>
           </td>
 				</tr>
 			</c:forEach>
