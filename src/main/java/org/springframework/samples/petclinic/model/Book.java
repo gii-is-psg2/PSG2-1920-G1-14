@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -24,6 +25,7 @@ public class Book extends BaseEntity {
 	private LocalDate	finish;
 
 	@Column(name = "details")
+	@NotBlank
 	private String		details;
 
 	@ManyToOne
